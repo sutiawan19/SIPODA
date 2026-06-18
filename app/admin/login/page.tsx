@@ -43,9 +43,7 @@ export default function AdminLoginPage() {
       >
         <div className="bg-white p-10 border border-neutral-200 rounded-2xl shadow-sm text-center">
           
-          <div className="w-12 h-12 bg-neutral-950 flex items-center justify-center rounded-lg mx-auto mb-8">
-            <div className="w-3 h-3 bg-white rounded-full" />
-          </div>
+          <img src="/logo.png" alt="Logo" className="w-12 h-12 object-contain mx-auto mb-8" />
 
           <h1 className="text-2xl font-bold text-neutral-950 mb-2 tracking-tight">Masuk ke Dasbor</h1>
           <p className="text-neutral-500 text-sm mb-8">Masukkan kredensial Anda untuk mengakses area pengelola instansi.</p>

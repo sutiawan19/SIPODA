@@ -33,9 +33,7 @@ export function AdminNavbar() {
           
           <div className="flex items-center gap-10">
             <Link href="/admin/dashboard" className="flex items-center gap-2">
-              <div className="w-6 h-6 bg-neutral-950 flex items-center justify-center rounded-[4px]">
-                <div className="w-2 h-2 bg-white rounded-full" />
-              </div>
+              <img src="/logo.png" alt="Logo" className="w-6 h-6 object-contain" />
               <span className="font-semibold text-lg text-neutral-950 tracking-tight">
                 AdminPanel
               </span>

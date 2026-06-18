@@ -12,10 +12,7 @@ export default function PublicNavbar() {
       <div className="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 group">
-          <div className="w-6 h-6 bg-neutral-950 flex items-center justify-center">
-            {/* Minimal geometric logo */}
-            <div className="w-2 h-2 bg-white rounded-full" />
-          </div>
+          <img src="/logo.png" alt="Logo" className="w-6 h-6 object-contain" />
           <span className="font-semibold text-neutral-950 text-base tracking-tight">
             SurveyPublik
           </span>

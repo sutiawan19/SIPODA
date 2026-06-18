@@ -9,9 +9,7 @@ export default function Footer() {
         <div className="flex flex-col md:flex-row justify-between items-start gap-10 mb-16">
           <div className="flex flex-col gap-4 max-w-sm">
             <Link href="/" className="flex items-center gap-2">
-              <div className="w-6 h-6 bg-neutral-950 flex items-center justify-center rounded-[4px]">
-                <div className="w-2 h-2 bg-white rounded-full" />
-              </div>
+              <img src="/logo.png" alt="Logo" className="w-6 h-6 object-contain" />
               <span className="font-semibold text-lg text-neutral-950 tracking-tight">
                 SurveyPublik
               </span>

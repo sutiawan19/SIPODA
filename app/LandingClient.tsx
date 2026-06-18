@@ -51,14 +51,7 @@ export function LandingClient({ stats }: LandingClientProps) {
               transition={{ duration: 0.5 }}
               className="flex flex-col items-center gap-4"
             >
-              <div className="w-16 h-16 bg-neutral-950 flex items-center justify-center relative">
-                <motion.div 
-                  animate={{ scale: [1, 1.5, 1], opacity: [1, 0, 1] }}
-                  transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-                  className="absolute inset-0 bg-neutral-900"
-                />
-                <div className="w-4 h-4 bg-white rounded-full relative z-10" />
-              </div>
+              <img src="/logo.png" alt="Logo" className="w-16 h-16 object-contain relative z-10" />
               <motion.span 
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
