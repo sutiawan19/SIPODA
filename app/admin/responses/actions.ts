@@ -39,3 +39,37 @@ export async function deleteResponse(responseId: string) {
   
   return { success: true }
 }
+
+export async function deleteMultipleResponses(responseIds: string[]) {
+  const supabase = await createClient()
+
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) {
+    throw new Error('Unauthorized')
+  }
+
+  const { error: answersError } = await supabase
+    .from('survey_answers')
+    .delete()
+    .in('response_id', responseIds)
+
+  if (answersError) {
+    console.error('Error deleting answers:', answersError)
+    throw new Error('Gagal menghapus detail jawaban.')
+  }
+
+  const { error: responseError } = await supabase
+    .from('survey_responses')
+    .delete()
+    .in('id', responseIds)
+
+  if (responseError) {
+    console.error('Error deleting responses:', responseError)
+    throw new Error('Gagal menghapus penilaian.')
+  }
+
+  revalidatePath('/admin/responses')
+  revalidatePath('/admin/dashboard')
+  
+  return { success: true }
+}

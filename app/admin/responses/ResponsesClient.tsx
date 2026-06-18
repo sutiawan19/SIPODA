@@ -3,11 +3,12 @@
 import { useState, useMemo } from "react";
 import * as XLSX from "xlsx";
 import { motion } from "framer-motion";
-import { Search, Filter, Calendar, RotateCcw, ChevronLeft, ChevronRight, Loader2, Download, Eye } from "lucide-react";
+import { Search, Filter, Calendar, RotateCcw, ChevronLeft, ChevronRight, Loader2, Download, Eye, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { ResponseDetailDrawer } from "@/components/admin/ResponseDetailDrawer";
 import { Select } from "@/components/ui/Select";
+import { deleteMultipleResponses } from "./actions";
 
 const FADE_UP = {
   hidden: { opacity: 0, y: 20 },
@@ -31,6 +32,39 @@ export function ResponsesClient({ initialResponses, questions, institutions }: R
   const itemsPerPage = 10;
 
   const [selectedResponse, setSelectedResponse] = useState<any | null>(null);
+
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const handleSelectAll = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.checked) {
+      setSelectedIds(paginatedData.map(row => row.id));
+    } else {
+      setSelectedIds([]);
+    }
+  };
+
+  const handleSelectRow = (id: string) => {
+    setSelectedIds(prev => 
+      prev.includes(id) ? prev.filter(item => item !== id) : [...prev, id]
+    );
+  };
+
+  const handleDeleteSelected = async () => {
+    if (selectedIds.length === 0) return;
+    if (!window.confirm(`Yakin ingin menghapus ${selectedIds.length} data responden? Data yang dihapus tidak dapat dikembalikan.`)) return;
+    
+    setIsDeleting(true);
+    try {
+      await deleteMultipleResponses(selectedIds);
+      setSelectedIds([]);
+    } catch (error) {
+      console.error(error);
+      alert("Gagal menghapus data");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
   const handleExport = () => {
     const worksheetData = filteredData.map(row => {
@@ -104,10 +138,18 @@ export function ResponsesClient({ initialResponses, questions, institutions }: R
           <h1 className="text-3xl font-bold text-neutral-950 mb-2 tracking-tight">Data Responden</h1>
           <p className="text-neutral-500">Analisis dan kelola laporan dari database</p>
         </div>
-        <Button onClick={handleExport} variant="outline" className="shrink-0 bg-white shadow-sm hover:bg-neutral-50">
-          <Download className="w-4 h-4 mr-2" />
-          Export Excel
-        </Button>
+        <div className="flex gap-2">
+          {selectedIds.length > 0 && (
+            <Button onClick={handleDeleteSelected} variant="destructive" disabled={isDeleting} className="shrink-0 shadow-sm">
+              {isDeleting ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Trash2 className="w-4 h-4 mr-2" />}
+              Hapus {selectedIds.length} Terpilih
+            </Button>
+          )}
+          <Button onClick={handleExport} variant="outline" className="shrink-0 bg-white shadow-sm hover:bg-neutral-50">
+            <Download className="w-4 h-4 mr-2" />
+            Export Excel
+          </Button>
+        </div>
       </div>
 
       <motion.div 
@@ -203,6 +245,14 @@ export function ResponsesClient({ initialResponses, questions, institutions }: R
             <table className="w-full text-left text-sm whitespace-nowrap">
               <thead className="bg-white border-b border-neutral-200 text-neutral-500 font-medium sticky top-0 z-0">
                 <tr>
+                  <th className="px-6 py-4 font-medium w-10">
+                    <input 
+                      type="checkbox" 
+                      className="rounded border-neutral-300 w-4 h-4 cursor-pointer"
+                      checked={paginatedData.length > 0 && paginatedData.every(row => selectedIds.includes(row.id))}
+                      onChange={handleSelectAll}
+                    />
+                  </th>
                   <th className="px-6 py-4 font-medium">Response ID</th>
                   <th className="px-6 py-4 font-medium">Submission Date</th>
                   <th className="px-6 py-4 font-medium">Institution</th>
@@ -214,7 +264,7 @@ export function ResponsesClient({ initialResponses, questions, institutions }: R
               <tbody className="divide-y divide-neutral-100">
                 {paginatedData.length === 0 && !isLoading ? (
                   <tr>
-                    <td colSpan={6} className="px-6 py-16 text-center text-neutral-500">
+                    <td colSpan={7} className="px-6 py-16 text-center text-neutral-500">
                       <div className="flex flex-col items-center">
                         <Filter className="w-8 h-8 text-neutral-300 mb-3" />
                         <p>Tidak ada data yang sesuai dengan filter.</p>
@@ -228,6 +278,14 @@ export function ResponsesClient({ initialResponses, questions, institutions }: R
                       onClick={() => setSelectedResponse(row)}
                       className="hover:bg-neutral-50 transition-colors cursor-pointer group"
                     >
+                      <td className="px-6 py-4" onClick={(e) => e.stopPropagation()}>
+                        <input 
+                          type="checkbox" 
+                          className="rounded border-neutral-300 w-4 h-4 cursor-pointer"
+                          checked={selectedIds.includes(row.id)}
+                          onChange={() => handleSelectRow(row.id)}
+                        />
+                      </td>
                       <td className="px-6 py-4 font-mono text-neutral-900 font-medium group-hover:text-neutral-600 transition-colors">{row.id}</td>
                       <td className="px-6 py-4 text-neutral-600">{row.date}</td>
                       <td className="px-6 py-4 font-medium text-neutral-900">{row.inst}</td>
