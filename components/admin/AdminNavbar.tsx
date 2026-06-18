@@ -50,21 +50,21 @@ export function AdminNavbar() {
           </div>
 
           <div className="flex items-center gap-2">
-            {/* Desktop logout */}
+            {/* Logout */}
             <Link
               href="/admin/login"
-              className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium text-neutral-500 hover:text-red-600 hover:bg-red-50 transition-colors"
+              className="flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium text-neutral-500 hover:text-red-600 hover:bg-red-50 transition-colors"
             >
               <LogOut className="w-4 h-4" />
-              Keluar
+              <span className="hidden sm:inline">Keluar</span>
             </Link>
           </div>
         </div>
       </header>
 
       {/* Mobile Bottom Floating Nav */}
-      <div className="md:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-50 w-[90%] max-w-[360px]">
-        <div className="bg-neutral-900/90 backdrop-blur-md border border-neutral-800 shadow-2xl rounded-full px-6 py-3 flex justify-between items-center text-neutral-400">
+      <div className="md:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-50 w-[85%] max-w-[280px]">
+        <div className="bg-white/90 backdrop-blur-md border border-neutral-200 shadow-[0_8px_30px_rgb(0,0,0,0.12)] rounded-full px-2 py-2 flex justify-around items-center text-neutral-500">
           {links.map((link) => {
             const isActive = pathname.startsWith(link.href);
             const Icon = link.icon;
@@ -72,11 +72,11 @@ export function AdminNavbar() {
               <Link
                 key={link.name}
                 href={link.href}
-                className={`flex flex-col items-center gap-1 transition-colors ${
-                  isActive ? "text-white" : "hover:text-neutral-200"
+                className={`flex flex-col items-center gap-1 transition-all flex-1 py-1 ${
+                  isActive ? "text-neutral-900" : "hover:text-neutral-800"
                 }`}
               >
-                <div className={`p-1.5 rounded-full ${isActive ? "bg-white/10" : "transparent"}`}>
+                <div className={`p-1.5 rounded-full ${isActive ? "bg-neutral-100" : "transparent"}`}>
                   <Icon className="w-5 h-5" />
                 </div>
                 <span className="text-[10px] font-medium tracking-wide">
@@ -85,18 +85,6 @@ export function AdminNavbar() {
               </Link>
             );
           })}
-          
-          <div className="w-[1px] h-8 bg-neutral-800 mx-1" />
-
-          <Link
-            href="/admin/login"
-            className="flex flex-col items-center gap-1 text-neutral-400 hover:text-red-400 transition-colors"
-          >
-            <div className="p-1.5 rounded-full transparent">
-              <LogOut className="w-5 h-5" />
-            </div>
-            <span className="text-[10px] font-medium tracking-wide">Keluar</span>
-          </Link>
         </div>
       </div>
     </>
