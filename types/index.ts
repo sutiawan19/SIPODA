@@ -14,6 +14,7 @@ export interface SurveyQuestion {
   label: string;
   description: string;
   emoji?: string;
+  type?: string;
 }
 
 export interface SurveyRating {
