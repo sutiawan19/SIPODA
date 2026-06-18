@@ -7,8 +7,9 @@ import { ArrowLeft, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/Button";
 
+import { login } from "./actions";
+
 export default function AdminLoginPage() {
-  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -18,15 +19,10 @@ export default function AdminLoginPage() {
     setError("");
 
     const formData = new FormData(e.currentTarget);
-    const password = formData.get("password") as string;
+    const result = await login(formData);
 
-    // Mock validation
-    await new Promise((resolve) => setTimeout(resolve, 800));
-
-    if (password === "admin") {
-      router.push("/admin/dashboard");
-    } else {
-      setError("Kata sandi salah. Gunakan 'admin'.");
+    if (result?.error) {
+      setError(result.error);
       setIsLoading(false);
     }
   };
@@ -56,12 +52,12 @@ export default function AdminLoginPage() {
 
           <form onSubmit={handleLogin} className="flex flex-col gap-5 text-left">
             <div>
-              <label className="block text-sm font-medium text-neutral-900 mb-2">Username</label>
+              <label className="block text-sm font-medium text-neutral-900 mb-2">Email</label>
               <input 
-                type="text" 
-                name="username"
+                type="email" 
+                name="email"
                 required
-                defaultValue="admin"
+                placeholder="admin@example.com"
                 className="w-full px-4 py-3 border border-neutral-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-neutral-900 focus:border-transparent transition-all"
               />
             </div>
@@ -89,7 +85,7 @@ export default function AdminLoginPage() {
         </div>
         
         <p className="text-center text-sm text-neutral-400 mt-8">
-          Untuk pengujian prototipe, gunakan sandi: <span className="font-mono bg-neutral-200 text-neutral-700 px-1 py-0.5 rounded">admin</span>
+          Gunakan kredensial yang telah didaftarkan di Supabase Auth.
         </p>
 
       </motion.div>

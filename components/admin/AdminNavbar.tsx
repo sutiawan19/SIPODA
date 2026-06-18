@@ -1,11 +1,24 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { createBrowserClient } from '@supabase/ssr';
 import { LogOut, LayoutDashboard, Users } from "lucide-react";
 
 export function AdminNavbar() {
   const pathname = usePathname();
+  const router = useRouter();
+
+  const handleLogout = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    const supabase = createBrowserClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    );
+    await supabase.auth.signOut();
+    router.push("/admin/login");
+    router.refresh();
+  };
 
   const links = [
     { name: "Dashboard", href: "/admin/dashboard", icon: LayoutDashboard },
@@ -51,13 +64,13 @@ export function AdminNavbar() {
 
           <div className="flex items-center gap-2">
             {/* Logout */}
-            <Link
-              href="/admin/login"
+            <button
+              onClick={handleLogout}
               className="flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium text-neutral-500 hover:text-red-600 hover:bg-red-50 transition-colors"
             >
               <LogOut className="w-4 h-4" />
               <span className="hidden sm:inline">Keluar</span>
-            </Link>
+            </button>
           </div>
         </div>
       </header>

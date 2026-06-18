@@ -27,13 +27,7 @@ export default function PublicNavbar() {
             Beranda
           </Link>
           <Link href="/institutions" className="text-sm text-neutral-500 hover:text-neutral-950 transition-colors">
-            Instansi
-          </Link>
-          <Link
-            href="/admin/login"
-            className="text-sm text-neutral-500 hover:text-neutral-950 transition-colors"
-          >
-            Admin
+            Daftar Instansi
           </Link>
           <Link
             href="/institutions"
@@ -61,9 +55,6 @@ export default function PublicNavbar() {
           </Link>
           <Link href="/institutions" onClick={() => setOpen(false)} className="text-sm text-neutral-700 py-2 border-b border-neutral-100">
             Instansi
-          </Link>
-          <Link href="/admin/login" onClick={() => setOpen(false)} className="text-sm text-neutral-700 py-2 border-b border-neutral-100">
-            Admin
           </Link>
           <Link
             href="/institutions"

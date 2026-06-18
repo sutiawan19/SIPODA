@@ -4,35 +4,64 @@ import { useState } from "react";
 import { Drawer } from "@/components/ui/Drawer";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
-import { Printer, Download, MessageSquare, AlertCircle } from "lucide-react";
-import { DetailedResponse } from "@/lib/constants/mockAdminData";
-import { SURVEY_QUESTIONS } from "@/lib/constants/questions";
+import { Modal } from "@/components/ui/Modal";
+import { Printer, Download, MessageSquare, AlertCircle, Trash2, Loader2 } from "lucide-react";
+
+import { deleteResponse } from "@/app/admin/responses/actions";
+import { useRouter } from "next/navigation";
 
 interface ResponseDetailDrawerProps {
   isOpen: boolean;
   onClose: () => void;
-  data: DetailedResponse | null;
+  data: any | null;
+  questions: any[];
 }
 
-export function ResponseDetailDrawer({ isOpen, onClose, data }: ResponseDetailDrawerProps) {
+export function ResponseDetailDrawer({ isOpen, onClose, data, questions }: ResponseDetailDrawerProps) {
+  const router = useRouter();
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+
   if (!data) return null;
 
   // Analysis Logic
   const scoreEntries = Object.entries(data.scores);
-  const maxScore = Math.max(...scoreEntries.map(([, v]) => v));
-  const minScore = Math.min(...scoreEntries.map(([, v]) => v));
+  const maxScore = Math.max(...scoreEntries.map(([, v]) => Number(v) || 0));
+  const minScore = Math.min(...scoreEntries.map(([, v]) => Number(v) || 0));
   
   const highestQ = scoreEntries.find(([, v]) => v === maxScore)?.[0];
   const lowestQ = scoreEntries.find(([, v]) => v === minScore)?.[0];
 
-  const highestLabel = SURVEY_QUESTIONS.find(q => q.id.replace('q', '') === highestQ?.replace('q', '') || q.id === highestQ || q.id.startsWith(highestQ || ''))?.label || "Indikator Terbaik";
-  const lowestLabel = SURVEY_QUESTIONS.find(q => q.id.replace('q', '') === lowestQ?.replace('q', '') || q.id === lowestQ || q.id.startsWith(lowestQ || ''))?.label || "Indikator Terendah";
+  const highestQuestionObj = questions.find(q => q.id === highestQ || `q${q.sort_order}` === highestQ);
+  const lowestQuestionObj = questions.find(q => q.id === lowestQ || `q${q.sort_order}` === lowestQ);
+
+  const isUniform = maxScore === minScore;
+  const highestLabel = highestQuestionObj?.question || highestQuestionObj?.label || "Indikator Terbaik";
+  const lowestLabel = isUniform ? "-" : (lowestQuestionObj?.question || lowestQuestionObj?.label || "Indikator Terendah");
 
   const getVariant = (score: number) => {
     if (score >= 4.5) return "success";
     if (score >= 3.5) return "default";
     if (score >= 2.5) return "neutral";
     return "warning";
+  };
+
+  const handleDeleteClick = () => {
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    setIsDeleting(true);
+    try {
+      await deleteResponse(data.rawId || data.id); // Assuming data.id is the UUID
+      setIsDeleteModalOpen(false);
+      onClose();
+      router.refresh(); // Refresh the page to update the list
+    } catch (err: any) {
+      alert(err.message || "Gagal menghapus data.");
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   return (
@@ -47,6 +76,14 @@ export function ResponseDetailDrawer({ isOpen, onClose, data }: ResponseDetailDr
               <h2 className="text-3xl font-bold text-neutral-950 font-mono tracking-tight">{data.id}</h2>
               <p className="text-neutral-500 mt-1">{data.date} • {data.inst}</p>
             </div>
+            <button
+              onClick={handleDeleteClick}
+              disabled={isDeleting}
+              className="flex items-center gap-2 text-sm text-red-600 hover:text-red-700 font-medium px-3 py-1.5 rounded-md hover:bg-red-50 transition-colors"
+            >
+              {isDeleting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
+              Hapus
+            </button>
           </div>
 
           {/* Satisfaction Overview */}
@@ -73,15 +110,16 @@ export function ResponseDetailDrawer({ isOpen, onClose, data }: ResponseDetailDr
           <section>
             <h3 className="text-lg font-semibold text-neutral-950 mb-6">Rincian Pertanyaan</h3>
             <div className="space-y-4">
-              {SURVEY_QUESTIONS.map((q, i) => {
-                const qKey = `q${i + 1}` as keyof typeof data.scores;
-                const score = data.scores[qKey];
+              {questions.map((q, i) => {
+                const qKey = q.id;
+                // Map the dynamic key properly, fallback to q1..q5 logic if it matches
+                const score = data.scores[qKey] || data.scores[`q${q.sort_order}`] || data.scores[`q${i+1}`] || 0;
                 return (
                   <div key={q.id} className="bg-white p-5 rounded-lg border border-neutral-200 shadow-sm">
                     <div className="flex justify-between items-start mb-4">
                       <div>
                         <p className="text-xs font-medium text-neutral-400 mb-1">Pertanyaan {i + 1}</p>
-                        <p className="font-medium text-neutral-900">{q.label}</p>
+                        <p className="font-medium text-neutral-900">{q.question || q.label}</p>
                       </div>
                       <div className="text-right">
                         <span className="font-bold text-neutral-900">{score}</span>
@@ -117,8 +155,13 @@ export function ResponseDetailDrawer({ isOpen, onClose, data }: ResponseDetailDr
                   <span className="text-xs font-semibold uppercase tracking-wider text-neutral-500">Penilaian Terendah</span>
                 </div>
                 <p className="font-medium text-neutral-900 mb-1">{lowestLabel}</p>
-                <p className="text-2xl font-bold text-neutral-950 mb-4">{minScore.toFixed(1)} <span className="text-sm font-normal text-neutral-400">/ 5</span></p>
-                <p className="text-sm text-neutral-500">Area yang masih memiliki peluang untuk ditingkatkan.</p>
+                <p className="text-2xl font-bold text-neutral-950 mb-4">
+                  {isUniform ? "-" : minScore.toFixed(1)} 
+                  {!isUniform && <span className="text-sm font-normal text-neutral-400">/ 5</span>}
+                </p>
+                <p className="text-sm text-neutral-500">
+                  {isUniform ? "Semua indikator memiliki nilai yang sama." : "Area yang masih memiliki peluang untuk ditingkatkan."}
+                </p>
               </div>
             </div>
           </section>
@@ -151,8 +194,42 @@ export function ResponseDetailDrawer({ isOpen, onClose, data }: ResponseDetailDr
         <div className="bg-white p-6 border-t border-neutral-200 flex justify-end items-center gap-4">
           <Button variant="default" onClick={onClose}>Tutup</Button>
         </div>
-
       </div>
+
+      <Modal 
+        isOpen={isDeleteModalOpen} 
+        onClose={() => !isDeleting && setIsDeleteModalOpen(false)} 
+        title="Hapus Data Responden"
+      >
+        <div className="space-y-6">
+          <p className="text-neutral-600">
+            Apakah Anda yakin ingin menghapus data responden <strong>{data.id}</strong> secara permanen? 
+            Tindakan ini tidak dapat dibatalkan.
+          </p>
+          <div className="flex items-center justify-end gap-3 pt-2">
+            <Button 
+              variant="outline" 
+              onClick={() => setIsDeleteModalOpen(false)}
+              disabled={isDeleting}
+            >
+              Batal
+            </Button>
+            <Button 
+              variant="destructive" 
+              onClick={handleConfirmDelete}
+              disabled={isDeleting}
+              className="bg-red-600 hover:bg-red-700 text-white"
+            >
+              {isDeleting ? (
+                <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Menghapus...</>
+              ) : (
+                "Ya, Hapus Data"
+              )}
+            </Button>
+          </div>
+        </div>
+      </Modal>
+
     </Drawer>
   );
 }

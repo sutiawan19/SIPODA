@@ -23,8 +23,7 @@ export default function Footer() {
           
           <nav className="flex flex-wrap gap-8 text-base font-medium">
             <Link href="/" className="text-neutral-500 hover:text-neutral-900 transition-colors">Beranda</Link>
-            <Link href="/institutions" className="text-neutral-500 hover:text-neutral-900 transition-colors">Instansi</Link>
-            <Link href="/admin/login" className="text-neutral-500 hover:text-neutral-900 transition-colors">Akses Admin</Link>
+            <Link href="/institutions" className="text-neutral-500 hover:text-neutral-900 transition-colors">Daftar Instansi</Link>
           </nav>
         </div>
 
