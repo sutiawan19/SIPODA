@@ -1,14 +1,15 @@
 "use client";
 
-import { use, useMemo } from "react";
+import { use, useMemo, useState, useEffect } from "react";
 import Link from "next/link";
-import { ArrowLeft, Share2, Copy } from "lucide-react";
+import { ArrowLeft, Share2, Copy, Check } from "lucide-react";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, BarChart, Bar, XAxis, YAxis } from "recharts";
 import { motion } from "framer-motion";
 
 import PublicNavbar from "@/components/layout/PublicNavbar";
 import Footer from "@/components/layout/Footer";
 import { Button } from "@/components/ui/Button";
+import { ShareModal } from "@/components/ui/ShareModal";
 
 import { MOCK_RESULT, MOCK_INSTITUTIONS } from "@/lib/constants/mockData";
 import { formatNumber, formatRating } from "@/lib/utils/formatters";
@@ -20,6 +21,20 @@ const SENTIMENT_COLORS = ['#171717', '#d4d4d4']; // Positive, Negative
 export default function InstitutionResultsPage({ params }: { params: Promise<{ institutionId: string }> }) {
   const { institutionId } = use(params);
   
+  const [isShareOpen, setIsShareOpen] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const [pageUrl, setPageUrl] = useState("");
+
+  useEffect(() => {
+    setPageUrl(window.location.href);
+  }, []);
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(pageUrl);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
   const result = useMemo(() => {
     if (institutionId === "disdukcapil") return MOCK_RESULT.disdukcapil;
     
@@ -83,10 +98,11 @@ export default function InstitutionResultsPage({ params }: { params: Promise<{ i
               <p className="text-neutral-500 text-lg">Ringkasan Hasil Survei</p>
             </div>
             <div className="flex gap-3">
-              <Button variant="outline">
-                <Copy className="w-4 h-4 mr-2" /> Salin Tautan
+              <Button variant="outline" onClick={handleCopy}>
+                {copied ? <Check className="w-4 h-4 mr-2" /> : <Copy className="w-4 h-4 mr-2" />}
+                {copied ? "Tersalin" : "Salin Tautan"}
               </Button>
-              <Button variant="default">
+              <Button variant="default" onClick={() => setIsShareOpen(true)}>
                 <Share2 className="w-4 h-4 mr-2" /> Bagikan
               </Button>
             </div>
@@ -180,6 +196,12 @@ export default function InstitutionResultsPage({ params }: { params: Promise<{ i
       </motion.main>
 
       <Footer />
+      <ShareModal 
+        isOpen={isShareOpen} 
+        onClose={() => setIsShareOpen(false)} 
+        url={pageUrl} 
+        title={`Hasil Survei Kepuasan: ${result.institutionName}`} 
+      />
     </div>
   );
 }

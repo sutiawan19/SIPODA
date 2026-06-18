@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 import { Search, Filter, Calendar, RotateCcw, ChevronLeft, ChevronRight, Loader2, Download, Eye } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
-import { ADMIN_ALL_RESPONSES, DetailedResponse } from "@/lib/constants/mockAdminData";
+import { ADMIN_ALL_RESPONSES_EXTENDED, DetailedResponse } from "@/lib/constants/mockAdminData";
 import { ResponseDetailDrawer } from "@/components/admin/ResponseDetailDrawer";
 
 const FADE_UP = {
@@ -62,7 +62,7 @@ export default function AdminResponsesPage() {
   };
 
   const filteredData = useMemo(() => {
-    return ADMIN_ALL_RESPONSES.filter((item) => {
+    return ADMIN_ALL_RESPONSES_EXTENDED.filter((item) => {
       const matchSearch = item.inst.toLowerCase().includes(search.toLowerCase()) || 
                           item.id.toLowerCase().includes(search.toLowerCase());
       const matchInst = instFilter === "Semua Instansi" || item.inst === instFilter;

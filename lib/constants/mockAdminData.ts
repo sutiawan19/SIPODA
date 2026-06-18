@@ -89,4 +89,27 @@ export const ADMIN_ALL_RESPONSES: DetailedResponse[] = [
   },
 ];
 
-export const ADMIN_RECENT_SUBMISSIONS = ADMIN_ALL_RESPONSES.slice(0, 5);
+const EXTRA_RESPONSES: DetailedResponse[] = Array.from({ length: 45 }).map((_, i) => {
+  const isSatisfied = Math.random() > 0.3;
+  const score = isSatisfied ? 3.5 + Math.random() * 1.5 : 1 + Math.random() * 2;
+  let sentiment = 'Puas';
+  if (score >= 4.5) sentiment = 'Sangat Puas';
+  else if (score >= 3.5) sentiment = 'Puas';
+  else if (score >= 2.5) sentiment = 'Cukup Puas';
+  else if (score >= 1.5) sentiment = 'Tidak Puas';
+  else sentiment = 'Sangat Tidak Puas';
+
+  return {
+    id: `R-${8913 - i}`,
+    date: `2026-06-${Math.floor(1 + Math.random() * 18).toString().padStart(2, '0')}`,
+    inst: ['Disdukcapil', 'RSUD', 'Dinas Sosial', 'Dinas Pendidikan', 'Dinas Kesehatan', 'Bapenda'][Math.floor(Math.random() * 6)],
+    score: score,
+    sentiment: sentiment,
+    scores: { q1: score, q2: score, q3: score, q4: score, q5: score },
+    kendala: isSatisfied ? '' : 'Pelayanan agak lambat hari ini.',
+    saran: isSatisfied ? 'Pertahankan!' : 'Tolong dipercepat.'
+  };
+});
+
+export const ADMIN_ALL_RESPONSES_EXTENDED = [...ADMIN_ALL_RESPONSES, ...EXTRA_RESPONSES];
+export const ADMIN_RECENT_SUBMISSIONS = ADMIN_ALL_RESPONSES_EXTENDED.slice(0, 5);

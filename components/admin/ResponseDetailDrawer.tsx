@@ -41,7 +41,7 @@ export function ResponseDetailDrawer({ isOpen, onClose, data }: ResponseDetailDr
         
         {/* Detail Header */}
         <div className="bg-white px-8 pt-10 pb-8 border-b border-neutral-200">
-          <p className="text-sm font-medium text-neutral-500 mb-2 uppercase tracking-widest">Response Detail</p>
+          <p className="text-sm font-medium text-neutral-500 mb-2 uppercase tracking-widest">Detail Responden</p>
           <div className="flex justify-between items-start mb-6">
             <div>
               <h2 className="text-3xl font-bold text-neutral-950 font-mono tracking-tight">{data.id}</h2>
@@ -52,7 +52,7 @@ export function ResponseDetailDrawer({ isOpen, onClose, data }: ResponseDetailDr
           {/* Satisfaction Overview */}
           <div className="bg-neutral-950 rounded-xl p-6 text-white mt-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
             <div>
-              <p className="text-neutral-400 text-sm font-medium mb-1">Overall Satisfaction Score</p>
+              <p className="text-neutral-400 text-sm font-medium mb-1">Skor Kepuasan Keseluruhan</p>
               <div className="flex items-baseline gap-2">
                 <span className="text-5xl font-bold tracking-tighter">{data.score.toFixed(1)}</span>
                 <span className="text-xl text-neutral-500">/ 5</span>
@@ -71,7 +71,7 @@ export function ResponseDetailDrawer({ isOpen, onClose, data }: ResponseDetailDr
           
           {/* Question Breakdown */}
           <section>
-            <h3 className="text-lg font-semibold text-neutral-950 mb-6">Question Breakdown</h3>
+            <h3 className="text-lg font-semibold text-neutral-950 mb-6">Rincian Pertanyaan</h3>
             <div className="space-y-4">
               {SURVEY_QUESTIONS.map((q, i) => {
                 const qKey = `q${i + 1}` as keyof typeof data.scores;
@@ -80,7 +80,7 @@ export function ResponseDetailDrawer({ isOpen, onClose, data }: ResponseDetailDr
                   <div key={q.id} className="bg-white p-5 rounded-lg border border-neutral-200 shadow-sm">
                     <div className="flex justify-between items-start mb-4">
                       <div>
-                        <p className="text-xs font-medium text-neutral-400 mb-1">Question {i + 1}</p>
+                        <p className="text-xs font-medium text-neutral-400 mb-1">Pertanyaan {i + 1}</p>
                         <p className="font-medium text-neutral-900">{q.label}</p>
                       </div>
                       <div className="text-right">
@@ -100,12 +100,12 @@ export function ResponseDetailDrawer({ isOpen, onClose, data }: ResponseDetailDr
 
           {/* Service Quality Analysis */}
           <section>
-            <h3 className="text-lg font-semibold text-neutral-950 mb-6">Service Quality Analysis</h3>
+            <h3 className="text-lg font-semibold text-neutral-950 mb-6">Analisis Kualitas Pelayanan</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="bg-white p-5 rounded-lg border border-neutral-200">
                 <div className="flex items-center gap-2 mb-3">
                   <div className="w-2 h-2 rounded-full bg-neutral-900" />
-                  <span className="text-xs font-semibold uppercase tracking-wider text-neutral-500">Highest Rated</span>
+                  <span className="text-xs font-semibold uppercase tracking-wider text-neutral-500">Penilaian Tertinggi</span>
                 </div>
                 <p className="font-medium text-neutral-900 mb-1">{highestLabel}</p>
                 <p className="text-2xl font-bold text-neutral-950 mb-4">{maxScore.toFixed(1)} <span className="text-sm font-normal text-neutral-400">/ 5</span></p>
@@ -114,7 +114,7 @@ export function ResponseDetailDrawer({ isOpen, onClose, data }: ResponseDetailDr
               <div className="bg-white p-5 rounded-lg border border-neutral-200">
                 <div className="flex items-center gap-2 mb-3">
                   <div className="w-2 h-2 rounded-full bg-neutral-300" />
-                  <span className="text-xs font-semibold uppercase tracking-wider text-neutral-500">Lowest Rated</span>
+                  <span className="text-xs font-semibold uppercase tracking-wider text-neutral-500">Penilaian Terendah</span>
                 </div>
                 <p className="font-medium text-neutral-900 mb-1">{lowestLabel}</p>
                 <p className="text-2xl font-bold text-neutral-950 mb-4">{minScore.toFixed(1)} <span className="text-sm font-normal text-neutral-400">/ 5</span></p>

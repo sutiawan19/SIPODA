@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import Link from "next/link";
 import { Users, Star, TrendingUp, AlertCircle, ArrowUpRight } from "lucide-react";
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 import AnimatedCounter from "@/components/ui/AnimatedCounter";
@@ -86,7 +87,7 @@ export default function AdminDashboardPage() {
           <motion.div variants={FADE_UP} className="p-6 bg-white border border-neutral-200 rounded-xl shadow-sm flex flex-col">
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-lg font-semibold text-neutral-950">Terbaru Masuk</h3>
-              <button className="text-sm text-neutral-500 hover:text-neutral-900 transition-colors">Lihat Semua</button>
+              <Link href="/admin/responses" className="text-sm text-neutral-500 hover:text-neutral-900 transition-colors">Lihat Semua</Link>
             </div>
             
             <div className="flex-1 overflow-y-auto pr-2">
