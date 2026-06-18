@@ -85,7 +85,7 @@ export default function AdminLoginPage() {
         </div>
         
         <p className="text-center text-sm text-neutral-400 mt-8">
-          Gunakan kredensial yang telah didaftarkan di Supabase Auth.
+          Gunakan kredensial yang telah didaftarkan.
         </p>
 
       </motion.div>
