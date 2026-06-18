@@ -1,10 +1,11 @@
 "use client";
 
-import { use } from "react";
+import { use, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Check, BarChart3, ArrowLeft } from "lucide-react";
 import { motion } from "framer-motion";
+import confetti from "canvas-confetti";
 
 import PublicNavbar from "@/components/layout/PublicNavbar";
 import Footer from "@/components/layout/Footer";
@@ -17,6 +18,16 @@ export default function ThankYouPage({ params }: { params: Promise<{ submissionI
   const instId = searchParams.get("inst");
 
   const institution = MOCK_INSTITUTIONS.find((i) => i.id === instId);
+
+  useEffect(() => {
+    confetti({
+      particleCount: 150,
+      spread: 80,
+      origin: { y: 0.5 },
+      colors: ['#171717', '#525252', '#a3a3a3', '#e5e5e5'],
+      disableForReducedMotion: true
+    });
+  }, []);
 
   return (
     <div className="min-h-screen flex flex-col bg-white">
