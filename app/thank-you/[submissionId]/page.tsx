@@ -5,7 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import PublicNavbar from "@/components/layout/PublicNavbar";
 import Footer from "@/components/layout/Footer";
 import { Button } from "@/components/ui/Button";
-import { ThankYouClient } from "./ThankYouClient";
+import { ThankYouClient } from "@/app/thank-you/[submissionId]/ThankYouClient";
 
 export const dynamic = 'force-dynamic'
 
