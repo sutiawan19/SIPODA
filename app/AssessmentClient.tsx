@@ -141,6 +141,7 @@ export default function AssessmentClient({ institutions }: { institutions: any[]
 
   // Section 2 State
   const [answers, setAnswers] = useState<Record<string, number>>({});
+  const [missingFields, setMissingFields] = useState<string[]>([]);
 
   useEffect(() => {
     getProvinces().then(setProvinces);
@@ -163,20 +164,44 @@ export default function AssessmentClient({ institutions }: { institutions: any[]
     }
   }, [selectedReg]);
 
-  const findFirstIncompleteStep = () => {
-    if (!nama || !jabatan || !selectedProv || !selectedReg || !selectedDistName || !instansiDinilai) {
-      return 0;
-    }
+  const handlePrev = () => {
+    setCurrentStep(prev => prev - 1);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
-    for (let i = 0; i < DIMENSIONS.length; i++) {
-      const dim = DIMENSIONS[i];
+  const handleNext = () => {
+    let missingFieldId = "";
+    
+    if (currentStep === 0) {
+      if (!nama) missingFieldId = "field-nama";
+      else if (!jabatan) missingFieldId = "field-jabatan";
+      else if (!selectedProv) missingFieldId = "field-provinsi";
+      else if (!selectedReg) missingFieldId = "field-kabupaten";
+      else if (!selectedDistName) missingFieldId = "field-kecamatan";
+      else if (!instansiDinilai) missingFieldId = "field-instansi";
+    } else {
+      const dim = DIMENSIONS[currentStep - 1];
       for (const q of dim.questions) {
-        if (answers[q.id] === undefined) {
-          return i + 1; // Step 0 is User Info
+        if (!answers[q.id]) {
+          missingFieldId = `field-${q.id}`;
+          break;
         }
       }
     }
-    return -1;
+
+    if (missingFieldId) {
+      setMissingFields(prev => Array.from(new Set([...prev, missingFieldId])));
+      const el = document.getElementById(missingFieldId);
+      if (el) {
+        const y = el.getBoundingClientRect().top + window.scrollY - 150;
+        window.scrollTo({ top: y, behavior: 'smooth' });
+      }
+      return;
+    }
+
+    setMissingFields([]);
+    setCurrentStep(prev => prev + 1);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleSubmit = async (e?: React.FormEvent) => {
@@ -263,7 +288,7 @@ export default function AssessmentClient({ institutions }: { institutions: any[]
           <div className="space-y-8 bg-white p-5 sm:p-6 md:p-10 rounded-2xl border border-neutral-200 shadow-sm relative">
             
             {/* Progress Bar */}
-            <div className="sticky top-[64px] bg-white/95 backdrop-blur-md z-[60] pt-5 sm:pt-6 md:pt-10 pb-5 sm:pb-6 mb-8 border-b border-neutral-100 -mx-5 px-5 sm:-mx-6 sm:px-6 md:-mx-10 md:px-10 -mt-5 sm:-mt-6 md:-mt-10 rounded-t-2xl">
+            <div className="sticky top-[64px] bg-white/90 backdrop-blur-md z-[60] pt-5 sm:pt-6 md:pt-10 pb-5 sm:pb-6 mb-8 border-b border-neutral-100 -mx-5 px-5 sm:-mx-6 sm:px-6 md:-mx-10 md:px-10 -mt-5 sm:-mt-6 md:-mt-10 rounded-t-2xl">
               <div className="flex justify-between text-xs md:text-sm font-semibold text-neutral-500 mb-3 uppercase tracking-wider">
                 <span>Langkah Penilaian</span>
                 <span className="text-neutral-900">{currentStep + 1} / {totalSteps}</span>
@@ -273,7 +298,7 @@ export default function AssessmentClient({ institutions }: { institutions: any[]
               </div>
             </div>
 
-            <div className="min-h-[400px] relative z-10">
+            <div className="min-h-[400px]">
               {/* SECTION 1 */}
               {currentStep === 0 && (
                 <motion.section 
@@ -286,12 +311,13 @@ export default function AssessmentClient({ institutions }: { institutions: any[]
                   <h2 className="text-xl md:text-2xl font-bold mb-8 pb-4 border-b border-neutral-100 text-neutral-900">Informasi Penilai</h2>
                   
                   <div className="space-y-6">
-                    <div>
+                    <div id="field-nama">
                       <label className="block text-sm font-semibold text-neutral-800 mb-2">Nama Lengkap <span className="text-red-500">*</span></label>
-                      <input required type="text" value={nama} onChange={e => setNama(e.target.value)} className="w-full px-4 py-3 border border-neutral-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-neutral-900 focus:border-transparent text-base transition-all bg-neutral-50 focus:bg-white" placeholder="Masukkan nama lengkap" />
+                      <input required type="text" value={nama} onChange={e => { setNama(e.target.value); setMissingFields(m => m.filter(x => x !== 'field-nama')); }} className="w-full px-4 py-3 border border-neutral-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-neutral-900 focus:border-transparent text-base transition-all bg-neutral-50 focus:bg-white" placeholder="Masukkan nama lengkap" />
+                      {missingFields.includes('field-nama') && <span className="text-red-500 text-xs mt-1 block">Wajib diisi</span>}
                     </div>
 
-                    <div className="z-50 relative">
+                    <div className="z-50 relative" id="field-jabatan">
                       <label className="block text-sm font-semibold text-neutral-800 mb-2">Jabatan <span className="text-red-500">*</span></label>
                       {mounted && (
                         <Select 
@@ -300,14 +326,15 @@ export default function AssessmentClient({ institutions }: { institutions: any[]
                           styles={customSelectStyles}
                           placeholder="Pilih jabatan Anda"
                           value={jabatan ? { label: jabatan, value: jabatan } : null}
-                          onChange={(selected: any) => setJabatan(selected.value)}
+                          onChange={(selected: any) => { setJabatan(selected.value); setMissingFields(m => m.filter(x => x !== 'field-jabatan')); }}
                           menuPortalTarget={document.body}
                         />
                       )}
+                      {missingFields.includes('field-jabatan') && <span className="text-red-500 text-xs mt-1 block">Wajib dipilih</span>}
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-5 z-40 relative">
-                      <div className="z-40 relative">
+                      <div className="z-40 relative" id="field-provinsi">
                         <label className="block text-sm font-semibold text-neutral-800 mb-2">Provinsi <span className="text-red-500">*</span></label>
                         {mounted && (
                           <Select 
@@ -319,12 +346,14 @@ export default function AssessmentClient({ institutions }: { institutions: any[]
                             onChange={(selected: any) => {
                               setSelectedProv(selected.value);
                               setSelectedProvName(selected.label);
+                              setMissingFields(m => m.filter(x => x !== 'field-provinsi'));
                             }}
                             menuPortalTarget={document.body}
                           />
                         )}
+                        {missingFields.includes('field-provinsi') && <span className="text-red-500 text-xs mt-1 block">Wajib dipilih</span>}
                       </div>
-                      <div>
+                      <div id="field-kabupaten">
                         <label className="block text-sm font-semibold text-neutral-800 mb-2">Kabupaten/Kota <span className="text-red-500">*</span></label>
                         {mounted && (
                           <Select 
@@ -337,13 +366,15 @@ export default function AssessmentClient({ institutions }: { institutions: any[]
                             onChange={(selected: any) => {
                               setSelectedReg(selected?.value || "");
                               setSelectedRegName(selected?.label || "");
+                              setMissingFields(m => m.filter(x => x !== 'field-kabupaten'));
                             }}
                             noOptionsMessage={() => "Tidak ada data"}
                             menuPortalTarget={document.body}
                           />
                         )}
+                        {missingFields.includes('field-kabupaten') && <span className="text-red-500 text-xs mt-1 block">Wajib dipilih</span>}
                       </div>
-                      <div>
+                      <div id="field-kecamatan">
                         <label className="block text-sm font-semibold text-neutral-800 mb-2">Kecamatan <span className="text-red-500">*</span></label>
                         {mounted && (
                           <Select 
@@ -353,15 +384,19 @@ export default function AssessmentClient({ institutions }: { institutions: any[]
                             styles={customSelectStyles}
                             placeholder="Pilih Kecamatan"
                             value={selectedDistName ? { value: selectedDistName, label: selectedDistName } : null}
-                            onChange={(selected: any) => setSelectedDistName(selected?.value || "")}
+                            onChange={(selected: any) => {
+                              setSelectedDistName(selected?.value || "");
+                              setMissingFields(m => m.filter(x => x !== 'field-kecamatan'));
+                            }}
                             noOptionsMessage={() => "Tidak ada data"}
                             menuPortalTarget={document.body}
                           />
                         )}
+                        {missingFields.includes('field-kecamatan') && <span className="text-red-500 text-xs mt-1 block">Wajib dipilih</span>}
                       </div>
                     </div>
 
-                    <div className="pt-6 border-t border-neutral-100 relative z-10">
+                    <div className="pt-6 border-t border-neutral-100 relative z-10" id="field-instansi">
                       <label className="block text-sm font-semibold text-neutral-800 mb-2">
                         Instansi yang Dinilai <span className="text-red-500">*</span>
                       </label>
@@ -379,11 +414,15 @@ export default function AssessmentClient({ institutions }: { institutions: any[]
                           }}
                           placeholder="Ketik atau pilih instansi..."
                           value={instansiDinilai ? { value: instansiDinilai, label: institutions.find(i => i.id === instansiDinilai)?.name || "" } : null}
-                          onChange={(selected: any) => setInstansiDinilai(selected?.value || "")}
+                          onChange={(selected: any) => {
+                            setInstansiDinilai(selected?.value || "");
+                            setMissingFields(m => m.filter(x => x !== 'field-instansi'));
+                          }}
                           isSearchable
                           menuPortalTarget={document.body}
                         />
                       )}
+                      {missingFields.includes('field-instansi') && <span className="text-red-500 text-xs mt-1 block">Wajib dipilih</span>}
                     </div>
                   </div>
                 </motion.section>
@@ -409,12 +448,14 @@ export default function AssessmentClient({ institutions }: { institutions: any[]
                     <div className="space-y-8">
                       {dim.questions.map((q, idx) => {
                         const globalIndex = DIMENSIONS.slice(0, currentStep - 1).reduce((acc, d) => acc + d.questions.length, 0) + idx + 1;
+                        const isMissing = missingFields.includes(`field-${q.id}`);
                         return (
-                          <div key={q.id} className="bg-neutral-50/50 p-5 md:p-6 border border-neutral-100 rounded-2xl">
+                          <div id={`field-${q.id}`} key={q.id} className={`bg-neutral-50/50 p-5 md:p-6 border rounded-2xl transition-all ${isMissing ? 'border-red-400 bg-red-50/30 ring-4 ring-red-50' : 'border-neutral-100'}`}>
                             <p className="text-base md:text-lg font-medium text-neutral-800 mb-6 leading-relaxed flex items-start gap-3">
-                              <span className="bg-neutral-200 text-neutral-700 w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 text-sm mt-0.5">{globalIndex}</span>
+                              <span className={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 text-sm mt-0.5 ${isMissing ? 'bg-red-100 text-red-600' : 'bg-neutral-200 text-neutral-700'}`}>{globalIndex}</span>
                               {q.text}
                             </p>
+                            {isMissing && <p className="text-red-500 text-sm font-semibold mb-4 -mt-3 ml-9">Pertanyaan ini wajib diisi sebelum melanjutkan.</p>}
                             <div className="flex flex-col sm:grid sm:grid-cols-5 gap-3">
                               {LIKERT_OPTIONS.map((opt) => {
                                 const isSelected = answers[q.id] === opt.value;
@@ -422,7 +463,10 @@ export default function AssessmentClient({ institutions }: { institutions: any[]
                                   <button
                                     type="button"
                                     key={opt.value}
-                                    onClick={() => setAnswers(prev => ({ ...prev, [q.id]: opt.value }))}
+                                    onClick={() => {
+                                      setAnswers(prev => ({ ...prev, [q.id]: opt.value }));
+                                      setMissingFields(m => m.filter(x => x !== `field-${q.id}`));
+                                    }}
                                     className={`flex flex-row sm:flex-col items-center justify-start sm:justify-center py-3.5 px-5 sm:px-2 border rounded-xl transition-all active:scale-95 gap-4 sm:gap-0 ${isSelected ? 'bg-neutral-950 border-neutral-950 text-white shadow-md scale-[1.02]' : 'bg-white border-neutral-200 text-neutral-600 hover:border-neutral-400 hover:bg-neutral-50'}`}
                                   >
                                     <div className={`w-8 h-8 flex-shrink-0 flex items-center justify-center rounded-full sm:bg-transparent sm:w-auto sm:h-auto ${isSelected ? 'bg-white text-neutral-950 sm:text-white' : 'bg-neutral-100 text-neutral-600 sm:bg-transparent'}`}>
@@ -445,7 +489,7 @@ export default function AssessmentClient({ institutions }: { institutions: any[]
             {/* Navigation Footer */}
             <div className="flex flex-col-reverse sm:flex-row justify-between items-stretch sm:items-center gap-3 sm:gap-0 pt-8 mt-8 border-t border-neutral-100 relative z-10">
               {currentStep > 0 ? (
-                <Button type="button" variant="outline" onClick={() => setCurrentStep(prev => prev - 1)} className="rounded-xl w-full sm:w-auto h-14 sm:h-12 text-base sm:text-sm font-semibold">
+                <Button type="button" variant="outline" onClick={handlePrev} className="rounded-xl w-full sm:w-auto h-14 sm:h-12 text-base sm:text-sm font-semibold">
                   Kembali
                 </Button>
               ) : (
@@ -453,15 +497,7 @@ export default function AssessmentClient({ institutions }: { institutions: any[]
               )}
 
               {currentStep < totalSteps - 1 ? (
-                <Button type="button" onClick={(e) => {
-                  e.preventDefault();
-                  if (currentStep === 0 && (!nama || !jabatan || !selectedProv || !selectedReg || !selectedDistName || !instansiDinilai)) {
-                    setErrorMessage("Harap lengkapi semua informasi Data Diri sebelum melanjutkan.");
-                    setShowErrorPopup(true);
-                    return;
-                  }
-                  setCurrentStep(prev => prev + 1);
-                }} className="rounded-xl px-8 shadow-md w-full sm:w-auto h-14 sm:h-12 text-base sm:text-sm font-semibold">
+                <Button type="button" onClick={handleNext} className="rounded-xl px-8 shadow-md w-full sm:w-auto h-14 sm:h-12 text-base sm:text-sm font-semibold">
                   Selanjutnya
                 </Button>
               ) : (
