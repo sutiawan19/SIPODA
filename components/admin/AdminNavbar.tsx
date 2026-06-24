@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { createBrowserClient } from '@supabase/ssr';
-import { LogOut, LayoutDashboard, Users } from "lucide-react";
+import { LogOut, LayoutDashboard, Users, LineChart } from "lucide-react";
 
 export function AdminNavbar() {
   const pathname = usePathname();
@@ -31,7 +31,7 @@ export function AdminNavbar() {
       <header className="bg-white border-b border-neutral-200 sticky top-0 z-40">
         <div className="max-w-[1400px] mx-auto px-6 h-16 flex items-center justify-between">
           
-          <div className="flex items-center gap-10">
+          <div className="flex items-center gap-10 h-full">
             <Link href="/admin/dashboard" className="flex items-center gap-2">
               <img src="/logo.png" alt="Logo" className="w-6 h-6 object-contain" />
               <span className="font-semibold text-lg text-neutral-950 tracking-tight">
@@ -40,17 +40,17 @@ export function AdminNavbar() {
             </Link>
 
             {/* Desktop nav */}
-            <nav className="hidden md:flex items-center gap-2">
+            <nav className="hidden md:flex items-center gap-6 h-full">
               {links.map((link) => {
                 const isActive = pathname.startsWith(link.href);
                 return (
                   <Link
                     key={link.name}
                     href={link.href}
-                    className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                    className={`flex items-center h-full text-sm font-medium transition-colors border-b-2 pt-[2px] ${
                       isActive
-                        ? "bg-neutral-900 text-white"
-                        : "text-neutral-500 hover:text-neutral-900 hover:bg-neutral-100"
+                        ? "border-neutral-900 text-neutral-900"
+                        : "border-transparent text-neutral-500 hover:text-neutral-900 hover:border-neutral-300"
                     }`}
                   >
                     {link.name}

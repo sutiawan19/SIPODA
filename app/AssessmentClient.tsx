@@ -1,0 +1,532 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { motion } from "framer-motion";
+import { Loader2, Send } from "lucide-react";
+import { Button } from "@/components/ui/Button";
+import { getProvinces, getRegencies, getDistricts, Region } from "@/lib/api-wilayah";
+import { submitAssessment } from "./actions";
+import PublicNavbar from "@/components/layout/PublicNavbar";
+import Footer from "@/components/layout/Footer";
+import Select from "react-select";
+
+const customSelectStyles = {
+  control: (base: any, state: any) => ({
+    ...base,
+    padding: '2px',
+    borderRadius: '0.375rem',
+    borderColor: state.isFocused ? '#171717' : '#d4d4d4',
+    boxShadow: state.isFocused ? '0 0 0 1px #171717' : 'none',
+    '&:hover': { borderColor: state.isFocused ? '#171717' : '#a3a3a3' }
+  }),
+  option: (base: any, state: any) => ({
+    ...base,
+    backgroundColor: state.isSelected ? '#e5e5e5' : state.isFocused ? '#f5f5f5' : 'white',
+    color: '#171717',
+    cursor: 'pointer',
+    '&:active': { backgroundColor: '#d4d4d4' }
+  }),
+  menuPortal: (base: any) => ({ ...base, zIndex: 9999 })
+};
+
+const DIMENSIONS = [
+  {
+    id: "tangibles",
+    title: "1 - TANGIBLES (Bukti Fisik)",
+    questions: [
+      { id: "tangibles_1", text: "Fasilitas fisik seperti ruang pelayanan serta kenyamanan yang disediakan di tempat pelayanan sudah memadai." },
+      { id: "tangibles_2", text: "Peralatan serta teknologi seperti komputer, sistem antrean, dan website apakah sudah mendukung pelayanan yang baik." }
+    ]
+  },
+  {
+    id: "reliability",
+    title: "2 - RELIABILITY (Keandalan)",
+    questions: [
+      { id: "reliability_1", text: "Apakah pelayanan yang diberikan sudah sesuai dengan prosedur dan waktu yang sudah dijanjikan." },
+      { id: "reliability_2", text: "Apakah hasil pelayanan yang diterima sudah akurat dan tidak ada kesalahan." }
+    ]
+  },
+  {
+    id: "responsiveness",
+    title: "3 - RESPONSIVENESS (Ketanggapan)",
+    questions: [
+      { id: "responsiveness_1", text: "Apakah petugas sudah memberikan pelayanan dengan cepat serta tidak berbelit-belit." },
+      { id: "responsiveness_2", text: "Apakah petugas tanggap dalam membantu saya dalam menghadapi kendala." }
+    ]
+  },
+  {
+    id: "assurance",
+    title: "4 - ASSURANCE (Jaminan)",
+    questions: [
+      { id: "assurance_1", text: "Apakah petugas mempunyai kemampuan yang baik dalam memberikan pelayanan." },
+      { id: "assurance_2", text: "Apakah sikap petugas membuat anda merasa nyaman serta percaya dalam pelayanan." }
+    ]
+  },
+  {
+    id: "empathy",
+    title: "5 - EMPATHY (Empati)",
+    questions: [
+      { id: "empathy_1", text: "Apakah petugas sudah memberikan perhatian terhadap keluhan anda secara individu." },
+      { id: "empathy_2", text: "Apakah petugas bersikap ramah serta sopan selama pelayanan berlangsung." }
+    ]
+  },
+  {
+    id: "sdm",
+    title: "6 - SUMBER DAYA MANUSIA",
+    questions: [
+      { id: "sdm_1", text: "Apakah instansi sudah meningkatkan kualitas aparatur agar lebih responsif?" },
+      { id: "sdm_2", text: "Apakah beban kerja dan pembagian pegawai sesuai dengan jabatan?" }
+    ]
+  },
+  {
+    id: "koordinasi",
+    title: "7 - KOORDINASI ANTAR BIDANG",
+    questions: [
+      { id: "koordinasi_1", text: "Apakah sering terjadi tumpang tindih antar kewenangan?" },
+      { id: "koordinasi_2", text: "Seberapa sering rapat koordinasi antar bidang diadakan?" }
+    ]
+  }
+];
+
+const JABATAN_OPTIONS = [
+  { label: "Top Management", options: [{ value: "Sekda", label: "Sekda" }] },
+  { label: "Middle Management", options: [
+      { value: "Asisten Sekda & Staf Ahli Bupati", label: "Asisten Sekda & Staf Ahli Bupati" },
+      { value: "Inspektur Daerah", label: "Inspektur Daerah" },
+      { value: "Kepala Dinas/Kepala Badan", label: "Kepala Dinas/Kepala Badan" },
+      { value: "Sekretaris Dinas/Badan", label: "Sekretaris Dinas/Badan" },
+      { value: "Kepala Bagian (Kabag)", label: "Kepala Bagian (Kabag)" },
+      { value: "Kepala Bidang (Kabid)", label: "Kepala Bidang (Kabid)" },
+      { value: "Camat", label: "Camat" }
+  ]},
+  { label: "Lower Management", options: [
+      { value: "Kepala Sub Bagian (Kasubag)", label: "Kepala Sub Bagian (Kasubag)" },
+      { value: "Kepala Seksi (Kasi)", label: "Kepala Seksi (Kasi)" },
+      { value: "Lurah", label: "Lurah" },
+      { value: "Kepala Sub Bidang (Kasubid)", label: "Kepala Sub Bidang (Kasubid)" },
+      { value: "Jabatan Fungsional Tertentu (JFT)", label: "Jabatan Fungsional Tertentu (JFT)" },
+      { value: "Jabatan Pelaksana (Staf)", label: "Jabatan Pelaksana (Staf)" }
+  ]}
+];
+
+export default function AssessmentClient({ institutions }: { institutions: any[] }) {
+  const router = useRouter();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showErrorPopup, setShowErrorPopup] = useState(false);
+  const [showConfirmPopup, setShowConfirmPopup] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [currentStep, setCurrentStep] = useState(0);
+  const totalSteps = DIMENSIONS.length + 1;
+
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Section 1 State
+  const [nama, setNama] = useState("");
+  const [jabatan, setJabatan] = useState("");
+  const [instansiDinilai, setInstansiDinilai] = useState("");
+
+  const [provinces, setProvinces] = useState<Region[]>([]);
+  const [regencies, setRegencies] = useState<Region[]>([]);
+  const [districts, setDistricts] = useState<Region[]>([]);
+
+  const [selectedProv, setSelectedProv] = useState("");
+  const [selectedProvName, setSelectedProvName] = useState("");
+  const [selectedReg, setSelectedReg] = useState("");
+  const [selectedRegName, setSelectedRegName] = useState("");
+  const [selectedDistName, setSelectedDistName] = useState("");
+
+  // Section 2 State
+  const [answers, setAnswers] = useState<Record<string, number>>({});
+
+  useEffect(() => {
+    getProvinces().then(setProvinces);
+  }, []);
+
+  useEffect(() => {
+    if (selectedProv) {
+      getRegencies(selectedProv).then(setRegencies);
+      setSelectedReg("");
+      setSelectedRegName("");
+      setDistricts([]);
+      setSelectedDistName("");
+    }
+  }, [selectedProv]);
+
+  useEffect(() => {
+    if (selectedReg) {
+      getDistricts(selectedReg).then(setDistricts);
+      setSelectedDistName("");
+    }
+  }, [selectedReg]);
+
+  const findFirstIncompleteStep = () => {
+    if (!nama || !jabatan || !selectedProv || !selectedReg || !selectedDistName || !instansiDinilai) {
+      return 0;
+    }
+
+    for (let i = 0; i < DIMENSIONS.length; i++) {
+      const dim = DIMENSIONS[i];
+      for (const q of dim.questions) {
+        if (answers[q.id] === undefined) {
+          return i + 1; // Step 0 is User Info
+        }
+      }
+    }
+    return -1;
+  };
+
+  const handleSubmit = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    if (Object.keys(answers).length < 14) {
+      setErrorMessage("Harap lengkapi seluruh penilaian (14 Pertanyaan) sebelum mengirim form.");
+      setShowErrorPopup(true);
+      return;
+    }
+
+    // Show confirmation popup first
+    setShowConfirmPopup(true);
+  };
+
+  const executeSubmit = async () => {
+    setShowConfirmPopup(false);
+    setIsSubmitting(true);
+    try {
+      await submitAssessment({
+        nama_penilai: nama,
+        jabatan,
+        provinsi: selectedProvName,
+        kabupaten_kota: selectedRegName,
+        kecamatan: selectedDistName,
+        institution_id: instansiDinilai,
+        answers,
+        obstacle: "",
+        suggestion: ""
+      });
+      router.push("/thank-you");
+    } catch (error: any) {
+      alert(error.message || "Terjadi kesalahan.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const LIKERT_OPTIONS = [
+    { value: 1, label: "Sangat Tidak Setuju" },
+    { value: 2, label: "Tidak Setuju" },
+    { value: 3, label: "Cukup" },
+    { value: 4, label: "Setuju" },
+    { value: 5, label: "Sangat Setuju" },
+  ];
+
+  return (
+    <div className="min-h-screen flex flex-col bg-neutral-50 font-sans text-neutral-900 relative">
+      {/* Elegant Background Ornaments */}
+      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
+        {/* Subtle Grid Pattern */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#17171708_1px,transparent_1px),linear-gradient(to_bottom,#17171708_1px,transparent_1px)] bg-[size:32px_32px]"></div>
+        {/* Top/Bottom Fade for Grid */}
+        <div className="absolute inset-0 bg-gradient-to-b from-neutral-50/80 via-transparent to-neutral-50"></div>
+
+        {/* Top Right Logo Watermark */}
+        <div className="absolute -top-32 -right-32 w-96 h-96 opacity-[0.03] rotate-12 transform">
+          <img src="/logo.png" alt="" className="w-full h-full object-contain" />
+        </div>
+        
+        {/* Bottom Left Logo Watermark */}
+        <div className="absolute top-[60%] -left-48 w-[500px] h-[500px] opacity-[0.02] -rotate-12 transform">
+          <img src="/logo.png" alt="" className="w-full h-full object-contain" />
+        </div>
+
+        {/* Subtle Ambient Glows */}
+        <div className="absolute top-0 right-1/4 w-[600px] h-[600px] bg-neutral-200/40 rounded-full blur-[100px] mix-blend-multiply opacity-50"></div>
+        <div className="absolute bottom-1/4 left-1/3 w-[500px] h-[500px] bg-neutral-300/30 rounded-full blur-[120px] mix-blend-multiply opacity-30"></div>
+        
+        {/* Elegant Accent Line */}
+        <div className="absolute top-0 left-0 bottom-0 w-[1px] bg-gradient-to-b from-transparent via-neutral-200 to-transparent"></div>
+        <div className="absolute top-0 right-0 bottom-0 w-[1px] bg-gradient-to-b from-transparent via-neutral-200 to-transparent"></div>
+      </div>
+      
+      <div className="relative z-10 flex flex-col flex-grow">
+        <PublicNavbar />
+      
+      <main className="flex-grow py-12 px-6">
+        <div className="max-w-3xl mx-auto">
+          <div className="mb-12">
+            <h1 className="text-3xl font-bold tracking-tight mb-2">Penilaian Restrukturisasi Berbasis Kualitas Pelayanan Publik</h1>
+            <p className="text-neutral-500">Evaluasi internal kualitas layanan antar instansi pemerintahan.</p>
+          </div>
+
+          <div className="space-y-8 bg-white p-5 sm:p-6 md:p-10 rounded-2xl border border-neutral-200 shadow-sm relative">
+            
+            {/* Progress Bar */}
+            <div className="sticky top-[64px] bg-white/90 backdrop-blur-md z-50 pt-5 sm:pt-6 md:pt-10 pb-5 sm:pb-6 mb-8 border-b border-neutral-100 -mx-5 px-5 sm:-mx-6 sm:px-6 md:-mx-10 md:px-10 -mt-5 sm:-mt-6 md:-mt-10 rounded-t-2xl">
+              <div className="flex justify-between text-xs md:text-sm font-semibold text-neutral-500 mb-3 uppercase tracking-wider">
+                <span>Langkah Penilaian</span>
+                <span className="text-neutral-900">{currentStep + 1} / {totalSteps}</span>
+              </div>
+              <div className="w-full bg-neutral-100 rounded-full h-2.5 overflow-hidden">
+                <div className="bg-neutral-900 h-full rounded-full transition-all duration-700 ease-out" style={{ width: `${((currentStep + 1) / totalSteps) * 100}%` }}></div>
+              </div>
+            </div>
+
+            <div className="min-h-[400px]">
+              {/* SECTION 1 */}
+              {currentStep === 0 && (
+                <motion.section 
+                  key="step-0"
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <h2 className="text-xl md:text-2xl font-bold mb-8 pb-4 border-b border-neutral-100 text-neutral-900">Informasi Penilai</h2>
+                  
+                  <div className="space-y-6">
+                    <div>
+                      <label className="block text-sm font-semibold text-neutral-800 mb-2">Nama Lengkap <span className="text-red-500">*</span></label>
+                      <input required type="text" value={nama} onChange={e => setNama(e.target.value)} className="w-full px-4 py-3 border border-neutral-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-neutral-900 focus:border-transparent text-base transition-all bg-neutral-50 focus:bg-white" placeholder="Masukkan nama lengkap" />
+                    </div>
+
+                    <div className="z-50 relative">
+                      <label className="block text-sm font-semibold text-neutral-800 mb-2">Jabatan <span className="text-red-500">*</span></label>
+                      {mounted && (
+                        <Select 
+                          instanceId="jabatan-select"
+                          options={JABATAN_OPTIONS}
+                          styles={customSelectStyles}
+                          placeholder="Pilih jabatan Anda"
+                          value={jabatan ? { label: jabatan, value: jabatan } : null}
+                          onChange={(selected: any) => setJabatan(selected.value)}
+                          menuPortalTarget={document.body}
+                        />
+                      )}
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-5 z-40 relative">
+                      <div className="z-40 relative">
+                        <label className="block text-sm font-semibold text-neutral-800 mb-2">Provinsi <span className="text-red-500">*</span></label>
+                        {mounted && (
+                          <Select 
+                            instanceId="prov-select"
+                            options={provinces.map(p => ({ value: p.id, label: p.name }))}
+                            styles={customSelectStyles}
+                            placeholder="Pilih Provinsi"
+                            value={selectedProv ? { value: selectedProv, label: selectedProvName } : null}
+                            onChange={(selected: any) => {
+                              setSelectedProv(selected.value);
+                              setSelectedProvName(selected.label);
+                            }}
+                            menuPortalTarget={document.body}
+                          />
+                        )}
+                      </div>
+                      <div>
+                        <label className="block text-sm font-semibold text-neutral-800 mb-2">Kabupaten/Kota <span className="text-red-500">*</span></label>
+                        {mounted && (
+                          <Select 
+                            instanceId="kabupaten-select"
+                            isDisabled={!selectedProv}
+                            options={regencies.map(r => ({ value: r.id, label: r.name }))}
+                            styles={customSelectStyles}
+                            placeholder="Pilih Kabupaten"
+                            value={selectedReg ? { value: selectedReg, label: selectedRegName } : null}
+                            onChange={(selected: any) => {
+                              setSelectedReg(selected?.value || "");
+                              setSelectedRegName(selected?.label || "");
+                            }}
+                            noOptionsMessage={() => "Tidak ada data"}
+                            menuPortalTarget={document.body}
+                          />
+                        )}
+                      </div>
+                      <div>
+                        <label className="block text-sm font-semibold text-neutral-800 mb-2">Kecamatan <span className="text-red-500">*</span></label>
+                        {mounted && (
+                          <Select 
+                            instanceId="kecamatan-select"
+                            isDisabled={!selectedReg}
+                            options={districts.map(d => ({ value: d.name, label: d.name }))}
+                            styles={customSelectStyles}
+                            placeholder="Pilih Kecamatan"
+                            value={selectedDistName ? { value: selectedDistName, label: selectedDistName } : null}
+                            onChange={(selected: any) => setSelectedDistName(selected?.value || "")}
+                            noOptionsMessage={() => "Tidak ada data"}
+                            menuPortalTarget={document.body}
+                          />
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="pt-6 border-t border-neutral-100 relative z-10">
+                      <label className="block text-sm font-semibold text-neutral-800 mb-2">
+                        Instansi yang Dinilai <span className="text-red-500">*</span>
+                      </label>
+                      <p className="text-xs text-neutral-500 mb-3">Pilih instansi pelayanan publik yang Anda evaluasi hari ini.</p>
+                      {mounted && (
+                        <Select 
+                          instanceId="inst-dinilai-select"
+                          options={institutions.map(inst => ({ value: inst.id, label: inst.name }))}
+                          styles={{
+                            ...customSelectStyles,
+                            control: (base, state) => ({
+                              ...customSelectStyles.control(base, state),
+                              padding: '6px'
+                            })
+                          }}
+                          placeholder="Ketik atau pilih instansi..."
+                          value={instansiDinilai ? { value: instansiDinilai, label: institutions.find(i => i.id === instansiDinilai)?.name || "" } : null}
+                          onChange={(selected: any) => setInstansiDinilai(selected?.value || "")}
+                          isSearchable
+                          menuPortalTarget={document.body}
+                        />
+                      )}
+                    </div>
+                  </div>
+                </motion.section>
+              )}
+
+              {/* SECTION 2 (Dimensions) */}
+              {currentStep > 0 && currentStep <= DIMENSIONS.length && (() => {
+                const dim = DIMENSIONS[currentStep - 1];
+                return (
+                  <motion.section
+                    key={`step-${currentStep}`}
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -20 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <div className="mb-8 pb-4 border-b border-neutral-100">
+                      <span className="inline-block px-3 py-1 bg-neutral-100 text-neutral-600 rounded-full text-xs font-bold tracking-wider uppercase mb-3">Dimensi Penilaian</span>
+                      <h2 className="text-xl md:text-2xl font-bold text-neutral-900 tracking-tight">{dim.title}</h2>
+                      <p className="text-sm text-neutral-500 mt-2">Beri penilaian dengan skala 1 (Sangat Tidak Setuju) hingga 5 (Sangat Setuju).</p>
+                    </div>
+                    
+                    <div className="space-y-8">
+                      {dim.questions.map((q, idx) => {
+                        const globalIndex = DIMENSIONS.slice(0, currentStep - 1).reduce((acc, d) => acc + d.questions.length, 0) + idx + 1;
+                        return (
+                          <div key={q.id} className="bg-neutral-50/50 p-5 md:p-6 border border-neutral-100 rounded-2xl">
+                            <p className="text-base md:text-lg font-medium text-neutral-800 mb-6 leading-relaxed flex items-start gap-3">
+                              <span className="bg-neutral-200 text-neutral-700 w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 text-sm mt-0.5">{globalIndex}</span>
+                              {q.text}
+                            </p>
+                            <div className="flex flex-col sm:grid sm:grid-cols-5 gap-3">
+                              {LIKERT_OPTIONS.map((opt) => {
+                                const isSelected = answers[q.id] === opt.value;
+                                return (
+                                  <button
+                                    type="button"
+                                    key={opt.value}
+                                    onClick={() => setAnswers(prev => ({ ...prev, [q.id]: opt.value }))}
+                                    className={`flex flex-row sm:flex-col items-center justify-start sm:justify-center py-3.5 px-5 sm:px-2 border rounded-xl transition-all active:scale-95 gap-4 sm:gap-0 ${isSelected ? 'bg-neutral-950 border-neutral-950 text-white shadow-md scale-[1.02]' : 'bg-white border-neutral-200 text-neutral-600 hover:border-neutral-400 hover:bg-neutral-50'}`}
+                                  >
+                                    <div className={`w-8 h-8 flex-shrink-0 flex items-center justify-center rounded-full sm:bg-transparent sm:w-auto sm:h-auto ${isSelected ? 'bg-white text-neutral-950 sm:text-white' : 'bg-neutral-100 text-neutral-600 sm:bg-transparent'}`}>
+                                      <span className="font-bold text-lg">{opt.value}</span>
+                                    </div>
+                                    <span className="text-sm sm:text-[10px] sm:uppercase tracking-wider sm:mt-2 text-left sm:text-center opacity-90 font-medium sm:font-normal leading-tight">{opt.label}</span>
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </motion.section>
+                );
+              })()}
+            </div>
+
+            {/* Navigation Footer */}
+            <div className="flex flex-col-reverse sm:flex-row justify-between items-stretch sm:items-center gap-3 sm:gap-0 pt-8 mt-8 border-t border-neutral-100 relative z-10">
+              {currentStep > 0 ? (
+                <Button type="button" variant="outline" onClick={() => setCurrentStep(prev => prev - 1)} className="rounded-xl w-full sm:w-auto h-14 sm:h-12 text-base sm:text-sm font-semibold">
+                  Kembali
+                </Button>
+              ) : (
+                <div className="hidden sm:block" />
+              )}
+
+              {currentStep < totalSteps - 1 ? (
+                <Button type="button" onClick={(e) => {
+                  e.preventDefault();
+                  if (currentStep === 0 && (!nama || !jabatan || !selectedProv || !selectedReg || !selectedDistName || !instansiDinilai)) {
+                    setErrorMessage("Harap lengkapi semua informasi Data Diri sebelum melanjutkan.");
+                    setShowErrorPopup(true);
+                    return;
+                  }
+                  setCurrentStep(prev => prev + 1);
+                }} className="rounded-xl px-8 shadow-md w-full sm:w-auto h-14 sm:h-12 text-base sm:text-sm font-semibold">
+                  Selanjutnya
+                </Button>
+              ) : (
+                <Button type="button" onClick={handleSubmit} disabled={isSubmitting} className="rounded-xl px-8 shadow-md w-full sm:w-auto sm:min-w-[200px] h-14 sm:h-12 text-base sm:text-sm font-semibold">
+                  {isSubmitting ? <><Loader2 className="w-5 h-5 mr-2 animate-spin" /> Mengirim...</> : "Kirim Penilaian"}
+                </Button>
+              )}
+            </div>
+          </div>
+        </div>
+        </main>
+        
+        <Footer />
+      </div>
+
+      {/* Custom Error Popup Modal */}
+      {showErrorPopup && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }} 
+            animate={{ opacity: 1, scale: 1 }} 
+            className="bg-white rounded-xl shadow-xl w-full max-w-sm p-6 text-center border border-neutral-200"
+          >
+            <div className="w-12 h-12 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4">
+              <span className="text-xl font-bold">!</span>
+            </div>
+            <h3 className="text-lg font-bold text-neutral-900 mb-2">Penilaian Belum Lengkap</h3>
+            <p className="text-sm text-neutral-500 mb-6">{errorMessage}</p>
+            <Button onClick={() => {
+              const step = findFirstIncompleteStep();
+              if (step !== -1) {
+                setCurrentStep(step);
+              }
+              setShowErrorPopup(false);
+            }} className="w-full rounded-xl">
+              Mengerti, Arahkan ke Pertanyaan
+            </Button>
+          </motion.div>
+        </div>
+      )}
+
+      {/* Custom Confirmation Popup Modal */}
+      {showConfirmPopup && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }} 
+            animate={{ opacity: 1, scale: 1 }} 
+            className="bg-white rounded-xl shadow-xl w-full max-w-sm p-6 text-center border border-neutral-200"
+          >
+            <div className="w-12 h-12 bg-neutral-100 text-neutral-900 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Send className="w-6 h-6" />
+            </div>
+            <h3 className="text-lg font-bold text-neutral-900 mb-2">Kirim Penilaian?</h3>
+            <p className="text-sm text-neutral-500 mb-6">Apakah Anda sudah yakin dengan semua penilaian yang Anda berikan? Data yang sudah dikirim tidak dapat diubah kembali.</p>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <Button onClick={() => setShowConfirmPopup(false)} variant="outline" className="w-full rounded-xl font-semibold">
+                Cek Ulang
+              </Button>
+              <Button onClick={executeSubmit} className="w-full rounded-xl font-semibold bg-neutral-900">
+                Ya, Kirim
+              </Button>
+            </div>
+          </motion.div>
+        </div>
+      )}
+    </div>
+  );
+}

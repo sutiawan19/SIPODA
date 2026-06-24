@@ -70,6 +70,12 @@ export interface Database {
           created_at: string
           response_code: string
           institution_id: string
+          nama_penilai: string
+          jabatan: string
+          provinsi: string
+          kabupaten_kota: string
+          kecamatan: string
+          answers: Json
           overall_score: number
           obstacle: string | null
           suggestion: string | null
@@ -79,6 +85,12 @@ export interface Database {
           created_at?: string
           response_code: string
           institution_id: string
+          nama_penilai: string
+          jabatan: string
+          provinsi: string
+          kabupaten_kota: string
+          kecamatan: string
+          answers: Json
           overall_score: number
           obstacle?: string | null
           suggestion?: string | null
@@ -88,6 +100,12 @@ export interface Database {
           created_at?: string
           response_code?: string
           institution_id?: string
+          nama_penilai?: string
+          jabatan?: string
+          provinsi?: string
+          kabupaten_kota?: string
+          kecamatan?: string
+          answers?: Json
           overall_score?: number
           obstacle?: string | null
           suggestion?: string | null

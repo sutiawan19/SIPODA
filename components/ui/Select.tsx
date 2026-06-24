@@ -9,9 +9,10 @@ interface SelectProps {
   placeholder?: string;
   className?: string;
   icon?: React.ReactNode;
+  position?: "top" | "bottom";
 }
 
-export function Select({ value, onChange, options, placeholder, className = "", icon }: SelectProps) {
+export function Select({ value, onChange, options, placeholder, className = "", icon, position = "bottom" }: SelectProps) {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -46,11 +47,13 @@ export function Select({ value, onChange, options, placeholder, className = "", 
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{ opacity: 0, y: -10 }}
+            initial={{ opacity: 0, y: position === "top" ? 10 : -10 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
+            exit={{ opacity: 0, y: position === "top" ? 10 : -10 }}
             transition={{ duration: 0.15 }}
-            className="absolute z-50 w-full min-w-[200px] mt-1 bg-white border border-neutral-200 rounded-lg shadow-lg py-1 max-h-60 overflow-auto"
+            className={`absolute z-50 w-full min-w-[200px] bg-white border border-neutral-200 rounded-lg shadow-lg py-1 max-h-60 overflow-auto ${
+              position === "top" ? "bottom-full mb-1" : "top-full mt-1"
+            }`}
           >
             {options.map((option) => (
               <button

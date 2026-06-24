@@ -6,9 +6,7 @@ export const dynamic = 'force-dynamic'
 export default async function AdminResponsesPage() {
   const supabase = await createClient()
 
-  const { data: questions } = await supabase.from('survey_questions').select('*').order('sort_order')
-  const { data: institutions } = await supabase.from('institutions').select('*')
-  
+  // Fetch responses with the new schema columns
   const { data: responses } = await supabase
     .from('survey_responses')
     .select(`
@@ -16,49 +14,49 @@ export default async function AdminResponsesPage() {
       created_at,
       response_code,
       overall_score,
+      nama_penilai,
+      jabatan,
+      provinsi,
+      kabupaten_kota,
+      kecamatan,
+      answers,
       obstacle,
       suggestion,
-      institutions ( name ),
-      survey_answers ( question_id, score )
+      institutions ( name )
     `)
     .order('created_at', { ascending: false })
 
-  // Map to the format expected by the client
-  const mappedResponses = ((responses as any[]) || []).map(r => {
-    
-    // Determine sentiment
-    let sentiment = 'Cukup Puas'
-    if (r.overall_score >= 4.5) sentiment = 'Sangat Puas'
-    else if (r.overall_score >= 3.5) sentiment = 'Puas'
-    else if (r.overall_score >= 2.5) sentiment = 'Cukup Puas'
-    else if (r.overall_score >= 1.5) sentiment = 'Tidak Puas'
-    else sentiment = 'Sangat Tidak Puas'
+  // Still fetch institutions for the filter dropdown
+  const { data: institutions } = await supabase
+    .from('institutions')
+    .select('id, name')
+    .eq('is_active', true)
+    .order('name')
 
-    const scoresMap: Record<string, number> = {}
-    if (r.survey_answers && Array.isArray(r.survey_answers)) {
-      r.survey_answers.forEach((ans: any) => {
-        scoresMap[ans.question_id] = ans.score
-      })
-    }
-
-    return {
-      rawId: r.id,
-      id: r.response_code || '-',
-      date: new Date(r.created_at).toLocaleDateString('id-ID'),
-      inst: r.institutions ? (r.institutions as any).name : 'Unknown',
-      score: r.overall_score,
-      sentiment,
-      scores: scoresMap,
-      kendala: r.obstacle || '',
-      saran: r.suggestion || ''
-    }
-  })
+  // Map to format that client expects or can easily render
+  const formattedResponses = (responses || []).map((r: any) => ({
+    id: r.id,
+    response_code: r.response_code,
+    date: new Date(r.created_at).toLocaleDateString('id-ID', {
+      day: '2-digit', month: 'short', year: 'numeric'
+    }),
+    rawDate: r.created_at,
+    inst: r.institutions?.name || 'Unknown',
+    nama_penilai: r.nama_penilai,
+    jabatan: r.jabatan,
+    provinsi: r.provinsi,
+    kabupaten_kota: r.kabupaten_kota,
+    kecamatan: r.kecamatan,
+    score: r.overall_score || 0,
+    answers: r.answers || {},
+    kendala: r.obstacle,
+    saran: r.suggestion
+  }))
 
   return (
     <ResponsesClient 
-      initialResponses={mappedResponses} 
-      questions={questions || []} 
-      institutions={institutions || []} 
+      initialResponses={formattedResponses}
+      institutions={institutions || []}
     />
   )
 }

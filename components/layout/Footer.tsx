@@ -2,32 +2,11 @@ import Link from "next/link";
 
 export default function Footer() {
   return (
-    <footer className="border-t border-neutral-200 bg-white py-16">
+    <footer className="border-t border-neutral-200 bg-white py-4">
       <div className="max-w-5xl mx-auto px-6">
         
-        {/* Top Section */}
-        <div className="flex flex-col md:flex-row justify-between items-start gap-10 mb-16">
-          <div className="flex flex-col gap-4 max-w-sm">
-            <Link href="/" className="flex items-center gap-2">
-              <img src="/logo.png" alt="Logo" className="w-6 h-6 object-contain" />
-              <span className="font-semibold text-lg text-neutral-950 tracking-tight">
-                SurveyPublik
-              </span>
-            </Link>
-            <p className="text-neutral-500 text-base leading-relaxed">
-              Membangun pelayanan publik yang lebih baik dan transparan melalui umpan balik masyarakat.
-            </p>
-          </div>
-          
-          <nav className="flex flex-wrap gap-8 text-base font-medium">
-            <Link href="/" className="text-neutral-500 hover:text-neutral-900 transition-colors">Beranda</Link>
-            <Link href="/institutions" className="text-neutral-500 hover:text-neutral-900 transition-colors">Daftar Instansi</Link>
-          </nav>
-        </div>
-
-        {/* Bottom Section */}
-        <div className="flex flex-col sm:flex-row items-center justify-between pt-8 border-t border-neutral-100 text-sm text-neutral-400">
-          <p>© {new Date().getFullYear()} SurveyPublik. Hak Cipta Dilindungi.</p>
+        <div className="flex justify-center items-center text-sm text-neutral-400">
+          <p>© {new Date().getFullYear()} Hak Cipta Dilindungi.</p>
         </div>
 
       </div>
