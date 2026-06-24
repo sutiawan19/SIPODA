@@ -232,7 +232,7 @@ export default function AssessmentClient({ institutions }: { institutions: any[]
         <div className="absolute inset-0 bg-gradient-to-b from-neutral-50/80 via-transparent to-neutral-50"></div>
 
         {/* Top Right Logo Watermark */}
-        <div className="absolute -top-32 -right-32 w-96 h-96 opacity-[0.03] rotate-12 transform">
+        <div className="hidden md:block absolute -top-32 -right-32 w-96 h-96 opacity-[0.03] rotate-12 transform">
           <img src="/logo.png" alt="" className="w-full h-full object-contain" />
         </div>
         
