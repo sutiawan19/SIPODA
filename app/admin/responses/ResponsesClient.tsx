@@ -317,12 +317,12 @@ export function ResponsesClient({ initialResponses, institutions }: ResponsesCli
                       onChange={handleSelectAll}
                     />
                   </th>
-                  <th className="py-4 px-6 font-medium">ID Penilaian</th>
+                  <th className="py-4 px-6 font-medium w-24">ID Penilaian</th>
                   <th className="py-4 px-6 font-medium">Tanggal</th>
                   <th className="py-4 px-6 font-medium">Penilai</th>
                   <th className="py-4 px-6 font-medium">Instansi Dinilai</th>
                   <th className="py-4 px-6 font-medium">Jabatan</th>
-                  <th className="py-4 px-6 font-medium">Skor</th>
+                  <th className="py-4 px-6 font-medium w-20 text-center">Skor</th>
                   <th className="py-4 px-6 font-medium rounded-tr-2xl text-right">Aksi</th>
                 </tr>
               </thead>
@@ -353,10 +353,10 @@ export function ResponsesClient({ initialResponses, institutions }: ResponsesCli
                       </td>
                       <td className="px-6 py-4 font-mono text-neutral-900 font-medium group-hover:text-neutral-600 transition-colors">{row.response_code.replace(/^ASM-/, "")}</td>
                       <td className="px-6 py-4 text-neutral-600">{row.date}</td>
-                      <td className="px-6 py-4 font-medium text-neutral-900">{row.nama_penilai}</td>
-                      <td className="px-6 py-4 font-medium text-neutral-900">{row.inst}</td>
+                      <td className="px-6 py-4 font-medium text-neutral-900 max-w-[250px] truncate" title={row.nama_penilai}>{row.nama_penilai}</td>
+                      <td className="px-6 py-4 font-medium text-neutral-900 max-w-[300px] truncate" title={row.inst}>{row.inst}</td>
                       <td className="px-6 py-4 text-neutral-500 max-w-[150px] truncate">{row.jabatan}</td>
-                      <td className="px-6 py-4">
+                      <td className="px-6 py-4 text-center">
                         <div className="inline-flex items-center justify-center px-2.5 py-1 bg-neutral-100 rounded-lg font-bold text-neutral-900">
                           {row.score.toFixed(2)}
                         </div>
