@@ -263,7 +263,7 @@ export default function AssessmentClient({ institutions }: { institutions: any[]
           <div className="space-y-8 bg-white p-5 sm:p-6 md:p-10 rounded-2xl border border-neutral-200 shadow-sm relative">
             
             {/* Progress Bar */}
-            <div className="sticky top-[64px] bg-white/90 backdrop-blur-md z-50 pt-5 sm:pt-6 md:pt-10 pb-5 sm:pb-6 mb-8 border-b border-neutral-100 -mx-5 px-5 sm:-mx-6 sm:px-6 md:-mx-10 md:px-10 -mt-5 sm:-mt-6 md:-mt-10 rounded-t-2xl">
+            <div className="sticky top-[64px] bg-white/95 backdrop-blur-md z-[60] pt-5 sm:pt-6 md:pt-10 pb-5 sm:pb-6 mb-8 border-b border-neutral-100 -mx-5 px-5 sm:-mx-6 sm:px-6 md:-mx-10 md:px-10 -mt-5 sm:-mt-6 md:-mt-10 rounded-t-2xl">
               <div className="flex justify-between text-xs md:text-sm font-semibold text-neutral-500 mb-3 uppercase tracking-wider">
                 <span>Langkah Penilaian</span>
                 <span className="text-neutral-900">{currentStep + 1} / {totalSteps}</span>
@@ -273,7 +273,7 @@ export default function AssessmentClient({ institutions }: { institutions: any[]
               </div>
             </div>
 
-            <div className="min-h-[400px]">
+            <div className="min-h-[400px] relative z-10">
               {/* SECTION 1 */}
               {currentStep === 0 && (
                 <motion.section 
