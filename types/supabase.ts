@@ -1,62 +1,62 @@
-export type Json =
-  | string
-  | number
-  | boolean
-  | null
-  | { [key: string]: Json | undefined }
-  | Json[]
+  export type Json =
+    | string
+    | number
+    | boolean
+    | null
+    | { [key: string]: Json | undefined }
+    | Json[]
 
-export interface Database {
-  public: {
-    Tables: {
-      institutions: {
-        Row: {
-          id: string
-          created_at: string
-          name: string
-          description: string | null
-          category: string | null
-          address: string | null
-          is_active: boolean
+  export interface Database {
+    public: {
+      Tables: {
+        institutions: {
+          Row: {
+            id: string
+            created_at: string
+            name: string
+            description: string | null
+            category: string | null
+            address: string | null
+            is_active: boolean
+          }
+          Insert: {
+            id?: string
+            created_at?: string
+            name: string
+            description?: string | null
+            category?: string | null
+            address?: string | null
+            is_active?: boolean
+          }
+          Update: {
+            id?: string
+            created_at?: string
+            name?: string
+            description?: string | null
+            category?: string | null
+            address?: string | null
+            is_active?: boolean
+          }
         }
-        Insert: {
-          id?: string
-          created_at?: string
-          name: string
-          description?: string | null
-          category?: string | null
-          address?: string | null
-          is_active?: boolean
-        }
-        Update: {
-          id?: string
-          created_at?: string
-          name?: string
-          description?: string | null
-          category?: string | null
-          address?: string | null
-          is_active?: boolean
-        }
-      }
-      survey_questions: {
-        Row: {
-          id: string
-          created_at: string
-          label: string
-          description: string | null
-          sort_order: number
-          is_active: boolean
-        }
-        Insert: {
-          id?: string
-          created_at?: string
-          label: string
-          description?: string | null
-          sort_order?: number
-          is_active?: boolean
-        }
-        Update: {
-          id?: string
+        survey_questions: {
+          Row: {
+            id: string
+            created_at: string
+            label: string
+            description: string | null
+            sort_order: number
+            is_active: boolean
+          }
+          Insert: {
+            id?: string
+            created_at?: string
+            label: string
+            description?: string | null
+            sort_order?: number
+            is_active?: boolean
+          }
+          Update: {
+            id?: string
           created_at?: string
           label?: string
           description?: string | null

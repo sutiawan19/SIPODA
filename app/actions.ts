@@ -46,7 +46,7 @@ export async function submitAssessment(payload: AssessmentPayload) {
       overall_score: overall_score,
       obstacle: payload.obstacle || null,
       suggestion: payload.suggestion || null
-    })
+    } as any)
     .select()
     .single();
 
