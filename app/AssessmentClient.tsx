@@ -164,6 +164,22 @@ export default function AssessmentClient({ institutions }: { institutions: any[]
     }
   }, [selectedReg]);
 
+  const findFirstIncompleteStep = () => {
+    if (!nama || !jabatan || !selectedProv || !selectedReg || !selectedDistName || !instansiDinilai) {
+      return 0;
+    }
+
+    for (let i = 0; i < DIMENSIONS.length; i++) {
+      const dim = DIMENSIONS[i];
+      for (const q of dim.questions) {
+        if (answers[q.id] === undefined) {
+          return i + 1; // Step 0 is User Info
+        }
+      }
+    }
+    return -1;
+  };
+
   const handlePrev = () => {
     setCurrentStep(prev => prev - 1);
     window.scrollTo({ top: 0, behavior: 'smooth' });
