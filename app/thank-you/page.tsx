@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/Button";
 import confetti from "canvas-confetti";
 import { useEffect, Suspense } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 
 function getScoreData(score: number) {
   if (score <= 20) {
@@ -62,8 +62,17 @@ function ThankYouContent() {
   const scoreParam = searchParams.get("score");
   const score = scoreParam ? parseFloat(scoreParam) : null;
   const data = score !== null ? getScoreData(score) : null;
+  const router = useRouter();
 
   useEffect(() => {
+    if (score === null || isNaN(score)) {
+      router.replace("/");
+    }
+  }, [score, router]);
+
+  useEffect(() => {
+    if (score === null || isNaN(score)) return;
+
     // Trigger confetti on page load
     const duration = 3 * 1000;
     const animationEnd = Date.now() + duration;
@@ -102,9 +111,9 @@ function ThankYouContent() {
         transition={{ duration: 0.5 }}
         className="max-w-md w-full bg-white rounded-2xl shadow-sm border border-neutral-200 p-8 md:p-10 text-center relative overflow-hidden"
       >
-        <div className={`absolute top-0 left-0 w-full h-1.5 ${data ? data.barColor : 'bg-neutral-900'}`}></div>
+        <div className={`absolute top-0 left-0 w-full h-1.5 ${data?.barColor}`}></div>
         <div className="flex justify-center mb-6 mt-2">
-          <div className={`w-16 h-16 rounded-full flex items-center justify-center shadow-lg shadow-black/5 ${data ? data.barColor : 'bg-neutral-950'}`}>
+          <div className={`w-16 h-16 rounded-full flex items-center justify-center shadow-lg shadow-black/5 ${data?.barColor}`}>
             <CheckCircle2 className="w-8 h-8 text-white" />
           </div>
         </div>
@@ -121,51 +130,45 @@ function ThankYouContent() {
             transition={{ delay: 0.3 }}
             className="mb-8"
           >
-            {(() => {
-              const percentage = score; // 0-100 scale
-              
-              return (
-                <div className="bg-white border border-neutral-200 rounded-xl p-5 shadow-sm w-full text-left">
-                  <div className="flex justify-between items-start mb-5">
-                    <div>
-                      <span className="text-[11px] font-bold text-neutral-500 uppercase tracking-wider block mb-1">
-                        Skor Penilaian
-                      </span>
-                      <div className={`text-5xl font-black tracking-tighter ${data.textColor}`}>
-                        {score}%
-                      </div>
-                    </div>
-                    <div className={`px-2.5 py-1 rounded-md border ${data.bgSoft} ${data.borderSoft}`}>
-                      <span className={`text-[10px] font-bold uppercase tracking-wide ${data.textColor}`}>
-                        {data.status}
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="mb-5">
-                    <div className="h-1.5 w-full bg-neutral-100 rounded-full overflow-hidden">
-                      <div 
-                        className={`h-full ${data.barColor} transition-all duration-1000 ease-out`} 
-                        style={{ width: `${Math.max(0, percentage)}%` }}
-                      />
-                    </div>
-                    <div className="flex justify-between mt-1.5 text-[10px] font-bold text-neutral-400">
-                      <span>0%</span>
-                      <span>100%</span>
-                    </div>
-                  </div>
-
-                  <div className="border-t border-neutral-100 pt-4">
-                    <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest block mb-1.5">
-                      Rekomendasi Tindak Lanjut
-                    </span>
-                    <p className="text-sm font-medium text-neutral-700 leading-relaxed">
-                      {data.recommendation}
-                    </p>
+            <div className="bg-white border border-neutral-200 rounded-xl p-5 shadow-sm w-full text-left">
+              <div className="flex justify-between items-start mb-5">
+                <div>
+                  <span className="text-[11px] font-bold text-neutral-500 uppercase tracking-wider block mb-1">
+                    Skor Penilaian
+                  </span>
+                  <div className={`text-5xl font-black tracking-tighter ${data.textColor}`}>
+                    {score}%
                   </div>
                 </div>
-              );
-            })()}
+                <div className={`px-2.5 py-1 rounded-md border ${data.bgSoft} ${data.borderSoft}`}>
+                  <span className={`text-[10px] font-bold uppercase tracking-wide ${data.textColor}`}>
+                    {data.status}
+                  </span>
+                </div>
+              </div>
+
+              <div className="mb-5">
+                <div className="h-1.5 w-full bg-neutral-100 rounded-full overflow-hidden">
+                  <div 
+                    className={`h-full ${data.barColor} transition-all duration-1000 ease-out`} 
+                    style={{ width: `${Math.max(0, score)}%` }}
+                  />
+                </div>
+                <div className="flex justify-between mt-1.5 text-[10px] font-bold text-neutral-400">
+                  <span>0%</span>
+                  <span>100%</span>
+                </div>
+              </div>
+
+              <div className="border-t border-neutral-100 pt-4">
+                <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest block mb-1.5">
+                  Rekomendasi Tindak Lanjut
+                </span>
+                <p className="text-sm font-medium text-neutral-700 leading-relaxed">
+                  {data.recommendation}
+                </p>
+              </div>
+            </div>
           </motion.div>
         )}
 
