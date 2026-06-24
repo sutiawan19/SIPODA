@@ -92,7 +92,7 @@ export function ResponseDetailDrawer({ isOpen, onClose, data }: ResponseDetailDr
           <div className="flex justify-between items-start mb-6">
             <div>
               <p className="text-sm font-medium text-neutral-500 mb-1 uppercase tracking-widest">Detail Penilaian SERVQUAL</p>
-              <h2 className="text-3xl font-bold text-neutral-950 font-mono tracking-tight">{data.response_code}</h2>
+              <h2 className="text-3xl font-bold text-neutral-950 font-mono tracking-tight">{data.response_code.replace(/^ASM-/, "")}</h2>
               <p className="text-neutral-500 mt-1">{data.date}</p>
             </div>
             <button

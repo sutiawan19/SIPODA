@@ -30,7 +30,7 @@ export async function submitAssessment(payload: AssessmentPayload) {
     .select('*', { count: 'exact', head: true });
 
   const nextNumber = (count || 0) + 1;
-  const responseCode = `ASM-${nextNumber.toString().padStart(4, '0')}`;
+  const responseCode = nextNumber.toString().padStart(4, '0');
 
   const { data, error } = await supabase
     .from('survey_responses')

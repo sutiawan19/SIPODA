@@ -247,7 +247,13 @@ export default function AssessmentClient({ institutions }: { institutions: any[]
         obstacle: "",
         suggestion: ""
       });
-      router.push("/thank-you");
+
+      const answerValues = Object.values(answers) as number[];
+      const sum = answerValues.reduce((a, b) => a + b, 0);
+      const maxScore = answerValues.length * 5;
+      const percentage = Math.round((sum / maxScore) * 100);
+
+      router.push(`/thank-you?score=${percentage}`);
     } catch (error: any) {
       alert(error.message || "Terjadi kesalahan.");
     } finally {

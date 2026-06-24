@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import * as XLSX from "xlsx";
+import * as XLSX from "xlsx-js-style";
 import { motion } from "framer-motion";
 import { Search, Filter, Calendar, RotateCcw, ChevronLeft, ChevronRight, Loader2, Download, Eye, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
@@ -83,7 +83,7 @@ export function ResponsesClient({ initialResponses, institutions }: ResponsesCli
   const handleExport = () => {
     const worksheetData = filteredData.map(row => {
       const exportRow: any = {
-        "ID Penilaian": row.response_code,
+        "ID Penilaian": row.response_code.replace(/^ASM-/, ""),
         "Tanggal": row.date,
         "Nama Penilai": row.nama_penilai,
         "Jabatan": row.jabatan,
@@ -104,6 +104,65 @@ export function ResponsesClient({ initialResponses, institutions }: ResponsesCli
     });
 
     const worksheet = XLSX.utils.json_to_sheet(worksheetData);
+    
+    // 1. Set column widths
+    const wscols = [
+      { wch: 15 }, // ID Penilaian
+      { wch: 15 }, // Tanggal
+      { wch: 25 }, // Nama Penilai
+      { wch: 20 }, // Jabatan
+      { wch: 20 }, // Provinsi
+      { wch: 20 }, // Kabupaten/Kota
+      { wch: 20 }, // Kecamatan
+      { wch: 30 }, // Instansi
+      { wch: 15 }  // Skor Rata-rata
+    ];
+    // Add widths for the question columns
+    for (let i = 0; i < Object.keys(QUESTION_MAPPING).length; i++) {
+      wscols.push({ wch: 50 }); // Give question columns wide width
+    }
+    worksheet['!cols'] = wscols;
+
+    // 2. Style cells (Headers and Content)
+    const range = XLSX.utils.decode_range(worksheet['!ref'] || "A1:A1");
+    for (let R = range.s.r; R <= range.e.r; ++R) {
+      for (let C = range.s.c; C <= range.e.c; ++C) {
+        const cellAddress = XLSX.utils.encode_cell({ r: R, c: C });
+        if (!worksheet[cellAddress]) continue;
+
+        if (R === 0) {
+          // Header styling
+          worksheet[cellAddress].s = {
+            font: { bold: true, color: { rgb: "FFFFFF" } },
+            fill: { fgColor: { rgb: "171717" } }, // Dark neutral background
+            alignment: { horizontal: "center", vertical: "center", wrapText: true },
+            border: {
+              top: { style: "thin", color: { rgb: "CCCCCC" } },
+              bottom: { style: "thin", color: { rgb: "CCCCCC" } },
+              left: { style: "thin", color: { rgb: "CCCCCC" } },
+              right: { style: "thin", color: { rgb: "CCCCCC" } }
+            }
+          };
+        } else {
+          // Data row styling
+          let hAlign = "left";
+          if (C > 7) {
+            hAlign = "center"; // Skor Rata-rata and Questions
+          }
+
+          worksheet[cellAddress].s = {
+            alignment: { vertical: "center", horizontal: hAlign, wrapText: true },
+            border: {
+              top: { style: "thin", color: { rgb: "E5E5E5" } },
+              bottom: { style: "thin", color: { rgb: "E5E5E5" } },
+              left: { style: "thin", color: { rgb: "E5E5E5" } },
+              right: { style: "thin", color: { rgb: "E5E5E5" } }
+            }
+          };
+        }
+      }
+    }
+
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "Data Penilaian");
     
@@ -148,12 +207,18 @@ export function ResponsesClient({ initialResponses, institutions }: ResponsesCli
           </p>
         </div>
         <div className="flex gap-3 pb-4">
-          {selectedIds.length > 0 && (
-            <button onClick={handleDeleteSelected} disabled={isDeleting} className="inline-flex items-center justify-center gap-2 px-5 py-2.5 text-sm font-medium bg-red-50 text-red-600 rounded-full hover:bg-red-100 transition-all shadow-sm">
-              {isDeleting ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Trash2 className="w-4 h-4 mr-2" />}
-              Hapus {selectedIds.length} Terpilih
-            </button>
-          )}
+          <button 
+            onClick={handleDeleteSelected} 
+            disabled={isDeleting || selectedIds.length === 0} 
+            className={`inline-flex items-center justify-center gap-2 px-5 py-2.5 text-sm font-medium rounded-full transition-all shadow-sm ${
+              selectedIds.length > 0 
+                ? "bg-red-50 text-red-600 hover:bg-red-100 cursor-pointer" 
+                : "bg-neutral-100 text-neutral-400 cursor-not-allowed"
+            }`}
+          >
+            {isDeleting ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Trash2 className="w-4 h-4 mr-2" />}
+            Hapus {selectedIds.length > 0 ? `${selectedIds.length} Terpilih` : "Terpilih"}
+          </button>
           <button onClick={handleExport} className="inline-flex items-center justify-center gap-2 px-5 py-2.5 text-sm font-medium bg-neutral-900 text-white rounded-full hover:bg-black transition-all shadow-sm">
             <Download className="w-4 h-4 mr-2" />
             Export Excel
@@ -286,7 +351,7 @@ export function ResponsesClient({ initialResponses, institutions }: ResponsesCli
                           onChange={() => handleSelectRow(row.id)}
                         />
                       </td>
-                      <td className="px-6 py-4 font-mono text-neutral-900 font-medium group-hover:text-neutral-600 transition-colors">{row.response_code}</td>
+                      <td className="px-6 py-4 font-mono text-neutral-900 font-medium group-hover:text-neutral-600 transition-colors">{row.response_code.replace(/^ASM-/, "")}</td>
                       <td className="px-6 py-4 text-neutral-600">{row.date}</td>
                       <td className="px-6 py-4 font-medium text-neutral-900">{row.nama_penilai}</td>
                       <td className="px-6 py-4 font-medium text-neutral-900">{row.inst}</td>
