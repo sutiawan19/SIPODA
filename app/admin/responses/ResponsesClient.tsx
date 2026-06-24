@@ -16,15 +16,19 @@ const FADE_UP = {
 
 const QUESTION_MAPPING: Record<string, string> = {
   tangibles_1: "Fasilitas fisik seperti ruang pelayanan serta kenyamanan yang disediakan di tempat pelayanan sudah memadai.",
-  tangibles_2: "Peralatan serta teknologi seperti komputer, sistem antrean, dan website sudah mendukung pelayanan yang baik.",
-  reliability_1: "Pelayanan yang diberikan sudah sesuai dengan prosedur dan waktu yang dijanjikan.",
-  reliability_2: "Hasil pelayanan yang diterima sudah akurat dan tidak ada kesalahan.",
-  responsiveness_1: "Petugas memberikan pelayanan dengan cepat serta tidak berbelit-belit.",
-  responsiveness_2: "Petugas tanggap membantu ketika menghadapi kendala.",
-  assurance_1: "Petugas mempunyai kemampuan yang baik dalam memberikan pelayanan.",
-  assurance_2: "Sikap petugas membuat saya merasa nyaman dan percaya terhadap pelayanan.",
-  empathy_1: "Petugas memberikan perhatian terhadap keluhan secara individu.",
-  empathy_2: "Petugas bersikap ramah dan sopan selama pelayanan berlangsung."
+  tangibles_2: "Peralatan serta teknologi seperti komputer, sistem antrean, dan website apakah sudah mendukung pelayanan yang baik.",
+  reliability_1: "Apakah pelayanan yang diberikan sudah sesuai dengan prosedur dan waktu yang sudah dijanjikan.",
+  reliability_2: "Apakah hasil pelayanan yang diterima sudah akurat dan tidak ada kesalahan.",
+  responsiveness_1: "Apakah petugas sudah memberikan pelayanan dengan cepat serta tidak berbelit-belit.",
+  responsiveness_2: "Apakah petugas tanggap dalam membantu saya dalam menghadapi kendala.",
+  assurance_1: "Apakah petugas mempunyai kemampuan yang baik dalam memberikan pelayanan.",
+  assurance_2: "Apakah sikap petugas membuat anda merasa nyaman serta percaya dalam pelayanan.",
+  empathy_1: "Apakah petugas sudah memberikan perhatian terhadap keluhan anda secara individu.",
+  empathy_2: "Apakah petugas bersikap ramah serta sopan selama pelayanan berlangsung.",
+  sdm_1: "Apakah instansi sudah meningkatkan kualitas aparatur agar lebih responsif?",
+  sdm_2: "Apakah beban kerja dan pembagian pegawai sesuai dengan jabatan?",
+  koordinasi_1: "Apakah sering terjadi tumpah tindih antar kewenangan.",
+  koordinasi_2: "Seberapa sering rapat koordinasi antar bidang diadakan?"
 };
 
 interface ResponsesClientProps {
