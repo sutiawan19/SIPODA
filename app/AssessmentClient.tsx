@@ -157,7 +157,7 @@ export default function AssessmentClient({ institutions }: { institutions: any[]
 
   const handleNext = () => {
     if (currentStep === 0) {
-      const missing = [];
+      const missing: string[] = [];
       if (!jabatan) missing.push('field-jabatan');
       if (!selectedDistName) missing.push('field-kecamatan');
       if (!instansiDinilai) missing.push('field-instansi');
