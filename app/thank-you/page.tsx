@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { CheckCircle2 } from "lucide-react";
+import { CheckCircle2, Info, Sparkles, Lightbulb } from "lucide-react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/Button";
 import confetti from "canvas-confetti";
@@ -11,8 +11,8 @@ import { useSearchParams, useRouter } from "next/navigation";
 function getScoreData(score: number) {
   if (score <= 20) {
     return {
-      status: "Sangat Tidak Setuju",
-      recommendation: "Menyusun ulang visi, misi serta tujuan yang berbasis kualitas pelayanan publik.",
+      status: "Sangat Tidak Baik",
+      recommendation: "Kondisi sangat jauh dari harapan dan hampir tidak mendukung pelayanan. Indikator tidak berjalan dengan baik, sering menimbulkan hambatan, keluhan, atau kegagalan dalam proses pelayanan.",
       textColor: "text-rose-600",
       bgSoft: "bg-rose-50",
       borderSoft: "border-rose-100",
@@ -20,8 +20,8 @@ function getScoreData(score: number) {
     };
   } else if (score <= 40) {
     return {
-      status: "Tidak Setuju",
-      recommendation: "Lakukan survei kepuasan kepada masyarakat untuk dasar perbaikan pelayanan.",
+      status: "Tidak Baik",
+      recommendation: "Kondisi masih kurang memadai dan belum mampu mendukung pelayanan secara optimal. Indikator sudah ada atau diterapkan, tetapi pelaksanaannya masih banyak kekurangan sehingga pelayanan sering terganggu.",
       textColor: "text-amber-600",
       bgSoft: "bg-amber-50",
       borderSoft: "border-amber-100",
@@ -30,7 +30,7 @@ function getScoreData(score: number) {
   } else if (score <= 60) {
     return {
       status: "Cukup",
-      recommendation: "Menguatkan kualitas SDM melalui berbagai pelatihan berbasis kompetensi.",
+      recommendation: "Kondisi cukup memadai dan mampu mendukung pelayanan pada tingkat dasar. Indikator telah berjalan sesuai standar minimum, namun masih terdapat beberapa kelemahan yang perlu diperbaiki.",
       textColor: "text-violet-600",
       bgSoft: "bg-violet-50",
       borderSoft: "border-violet-100",
@@ -38,8 +38,8 @@ function getScoreData(score: number) {
     };
   } else if (score <= 80) {
     return {
-      status: "Setuju",
-      recommendation: "Mengembangkan sistem serta inovasi pelayanan publik.",
+      status: "Baik",
+      recommendation: "Kondisi sudah berjalan dengan baik dan mendukung pelayanan secara efektif. Indikator terlaksana secara konsisten, hanya terdapat sedikit kendala yang tidak terlalu memengaruhi kualitas pelayanan.",
       textColor: "text-blue-600",
       bgSoft: "bg-blue-50",
       borderSoft: "border-blue-100",
@@ -47,8 +47,8 @@ function getScoreData(score: number) {
     };
   } else {
     return {
-      status: "Sangat Setuju",
-      recommendation: "Mempertahankan dan mengembangkan inovasi pelayanan publik berkelanjutan.",
+      status: "Sangat Baik",
+      recommendation: "Kondisi sangat optimal dan menjadi pendukung utama kualitas pelayanan. Indikator berjalan secara maksimal, efektif, efisien, dan mampu memberikan dampak positif yang signifikan terhadap pelayanan.",
       textColor: "text-emerald-600",
       bgSoft: "bg-emerald-50",
       borderSoft: "border-emerald-100",
@@ -57,11 +57,23 @@ function getScoreData(score: number) {
   }
 }
 
+function parseDims(dimsString: string | null) {
+  if (!dimsString) return [];
+  return dimsString.split('|').map(d => {
+    const [title, pct] = d.split('_');
+    return { title, pct: parseInt(pct, 10) || 0 };
+  });
+}
+
 function ThankYouContent() {
   const searchParams = useSearchParams();
   const scoreParam = searchParams.get("score");
+  const highestDim = searchParams.get("highest");
+  const lowestDim = searchParams.get("lowest");
+  const dimsString = searchParams.get("dims");
   const score = scoreParam ? parseFloat(scoreParam) : null;
   const data = score !== null ? getScoreData(score) : null;
+  const dimsList = parseDims(dimsString);
   const router = useRouter();
 
   useEffect(() => {
@@ -130,7 +142,7 @@ function ThankYouContent() {
             transition={{ delay: 0.3 }}
             className="mb-8"
           >
-            <div className="bg-white border border-neutral-200 rounded-xl p-5 shadow-sm w-full text-left">
+            <div className="w-full text-left">
               <div className="flex justify-between items-start mb-5">
                 <div>
                   <span className="text-[11px] font-bold text-neutral-500 uppercase tracking-wider block mb-1">
@@ -140,8 +152,8 @@ function ThankYouContent() {
                     {score}%
                   </div>
                 </div>
-                <div className={`px-2.5 py-1 rounded-md border ${data.bgSoft} ${data.borderSoft}`}>
-                  <span className={`text-[10px] font-bold uppercase tracking-wide ${data.textColor}`}>
+                <div className={`px-3 py-1 rounded-full border ${data.bgSoft} ${data.borderSoft} flex items-center justify-center`}>
+                  <span className={`text-[10px] leading-none font-bold uppercase tracking-wide ${data.textColor} mt-[2px]`}>
                     {data.status}
                   </span>
                 </div>
@@ -160,13 +172,48 @@ function ThankYouContent() {
                 </div>
               </div>
 
-              <div className="border-t border-neutral-100 pt-4">
-                <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest block mb-1.5">
-                  Rekomendasi Tindak Lanjut
-                </span>
-                <p className="text-sm font-medium text-neutral-700 leading-relaxed">
-                  {data.recommendation}
-                </p>
+              {dimsList.length > 0 && (
+                <div className="mb-6 space-y-3 border-t border-neutral-100 pt-5">
+                  <span className="text-[11px] font-bold text-neutral-500 uppercase tracking-wider block mb-3">
+                    Skor per Dimensi
+                  </span>
+                  {dimsList.map((dim, idx) => (
+                    <div key={idx} className="flex flex-col gap-1.5">
+                      <div className="flex justify-between items-center text-xs">
+                        <span className="font-semibold text-neutral-700">{dim.title}</span>
+                        <span className="font-bold text-neutral-900">{dim.pct}%</span>
+                      </div>
+                      <div className="h-1.5 w-full bg-neutral-100 rounded-full overflow-hidden">
+                        <div 
+                          className={`h-full ${data.barColor} opacity-80 transition-all duration-1000 ease-out`} 
+                          style={{ width: `${Math.max(0, dim.pct)}%` }}
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              <div className="relative mt-12">
+                {/* Floating Label */}
+                <div className={`absolute -top-3 left-4 px-3 py-1 bg-white rounded-full border shadow-sm flex items-center gap-1.5 ${data.borderSoft} z-20`}>
+                  <Lightbulb className={`w-3.5 h-3.5 ${data.textColor}`} />
+                  <span className={`text-[10px] font-extrabold uppercase tracking-widest ${data.textColor}`}>
+                    Informasi Hasil
+                  </span>
+                </div>
+                
+                {/* Main Card Content */}
+                <div className={`relative p-5 md:p-6 pt-7 rounded-2xl border shadow-sm ${data.borderSoft} ${data.bgSoft} bg-opacity-40 overflow-hidden`}>
+                  <p className="text-sm font-semibold text-neutral-800 leading-relaxed text-justify relative z-10">
+                    {data.recommendation}
+                  </p>
+                  
+                  {/* Background Watermark */}
+                  <div className={`absolute -right-6 -bottom-6 opacity-[0.04] pointer-events-none ${data.textColor}`}>
+                    <CheckCircle2 className="w-36 h-36" />
+                  </div>
+                </div>
               </div>
             </div>
           </motion.div>

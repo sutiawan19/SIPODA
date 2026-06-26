@@ -27,7 +27,7 @@ export default function InstitutionCard({ institution }: InstitutionCardProps) {
           {/* Header */}
           {institution.category && (
             <div className="flex items-start mb-4">
-              <span className="text-xs font-medium px-2 py-1 border border-neutral-200 rounded-md text-neutral-600">
+              <span className="text-xs font-medium px-2 py-1 border border-neutral-200 rounded-md text-neutral-700">
                 {institution.category}
               </span>
             </div>
@@ -45,20 +45,20 @@ export default function InstitutionCard({ institution }: InstitutionCardProps) {
           <div className="pt-4 mt-auto mb-4 flex items-center text-xs text-neutral-500">
             <div className="flex items-center gap-1.5 bg-neutral-50 px-2 py-1 rounded-md border border-neutral-100">
               <Users className="w-3.5 h-3.5" />
-              <span className="font-medium text-neutral-600">{formatNumber(institution.totalResponses)}</span> ulasan
+              <span className="font-medium text-neutral-700">{formatNumber(institution.totalResponses)}</span> ulasan
             </div>
           </div>
 
           {/* CTAs */}
           <div className="flex gap-2 mt-auto">
-            <Link 
+            <Link
               href={`/survey/${institution.id}`}
               className="flex-1 inline-flex items-center justify-center gap-2 px-3 py-2 bg-neutral-900 text-white text-xs font-medium rounded-lg hover:bg-neutral-800 transition-colors"
             >
               <Edit3 className="w-3.5 h-3.5" />
               Isi Survei
             </Link>
-            <Link 
+            <Link
               href={`/results/${institution.id}`}
               className="flex-1 inline-flex items-center justify-center gap-2 px-3 py-2 bg-white text-neutral-700 border border-neutral-200 text-xs font-medium rounded-lg hover:bg-neutral-50 transition-colors"
             >
@@ -75,12 +75,12 @@ export default function InstitutionCard({ institution }: InstitutionCardProps) {
           </div>
         </div>
       </Card>
-      
-      <ShareModal 
-        isOpen={isShareOpen} 
-        onClose={() => setIsShareOpen(false)} 
-        url={shareUrl} 
-        title={`Survei Kepuasan: ${institution.name}`} 
+
+      <ShareModal
+        isOpen={isShareOpen}
+        onClose={() => setIsShareOpen(false)}
+        url={shareUrl}
+        title={`Survei Kepuasan: ${institution.name}`}
       />
     </div>
   );

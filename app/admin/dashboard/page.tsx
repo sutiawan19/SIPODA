@@ -15,10 +15,7 @@ export default async function AdminDashboardPage() {
       response_code,
       overall_score,
       answers,
-      nama_penilai,
       jabatan,
-      provinsi,
-      kabupaten_kota,
       kecamatan,
       institutions ( name )
     `)

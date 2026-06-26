@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Drawer } from "@/components/ui/Drawer";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
-import { Loader2, Trash2, MapPin, Building2, User, Briefcase } from "lucide-react";
+import { Loader2, Trash2, MapPin, Building2, User, Briefcase, Info } from "lucide-react";
 import { deleteMultipleResponses } from "@/app/admin/responses/actions";
 import { useRouter } from "next/navigation";
 
@@ -62,6 +62,20 @@ const DIMENSIONS = [
   }
 ];
 
+function getScoreData(score100: number) {
+  if (score100 <= 20) {
+    return { status: "Sangat Tidak Baik", recommendation: "Kondisi sangat jauh dari harapan dan hampir tidak mendukung pelayanan. Indikator tidak berjalan dengan baik, sering menimbulkan hambatan, keluhan, atau kegagalan dalam proses pelayanan.", color: "text-rose-600", bg: "bg-rose-50" };
+  } else if (score100 <= 40) {
+    return { status: "Tidak Baik", recommendation: "Kondisi masih kurang memadai dan belum mampu mendukung pelayanan secara optimal. Indikator sudah ada atau diterapkan, tetapi pelaksanaannya masih banyak kekurangan sehingga pelayanan sering terganggu.", color: "text-amber-600", bg: "bg-amber-50" };
+  } else if (score100 <= 60) {
+    return { status: "Cukup", recommendation: "Kondisi cukup memadai dan mampu mendukung pelayanan pada tingkat dasar. Indikator telah berjalan sesuai standar minimum, namun masih terdapat beberapa kelemahan yang perlu diperbaiki.", color: "text-violet-600", bg: "bg-violet-50" };
+  } else if (score100 <= 80) {
+    return { status: "Baik", recommendation: "Kondisi sudah berjalan dengan baik dan mendukung pelayanan secara efektif. Indikator terlaksana secara konsisten, hanya terdapat sedikit kendala yang tidak terlalu memengaruhi kualitas pelayanan.", color: "text-blue-600", bg: "bg-blue-50" };
+  } else {
+    return { status: "Sangat Baik", recommendation: "Kondisi sangat optimal dan menjadi pendukung utama kualitas pelayanan. Indikator berjalan secara maksimal, efektif, efisien, dan mampu memberikan dampak positif yang signifikan terhadap pelayanan.", color: "text-emerald-600", bg: "bg-emerald-50" };
+  }
+}
+
 export function ResponseDetailDrawer({ isOpen, onClose, data }: ResponseDetailDrawerProps) {
   const router = useRouter();
   const [isDeleting, setIsDeleting] = useState(false);
@@ -82,16 +96,13 @@ export function ResponseDetailDrawer({ isOpen, onClose, data }: ResponseDetailDr
     }
   };
 
-  const getVariant = (score: number) => {
-    if (score >= 4.0) return "success";
-    if (score >= 3.0) return "neutral";
-    return "warning";
-  };
+  const score100 = data ? (data.score / 5) * 100 : 0;
+  const scoreInfo = getScoreData(score100);
 
   return (
     <Drawer isOpen={isOpen} onClose={onClose}>
       <div className="flex flex-col h-full bg-neutral-50 font-sans">
-        
+
         {/* Detail Header */}
         <div className="bg-white px-8 pt-10 pb-8 border-b border-neutral-200">
           <div className="flex justify-between items-start mb-6">
@@ -116,11 +127,12 @@ export function ResponseDetailDrawer({ isOpen, onClose, data }: ResponseDetailDr
               <div className="flex items-baseline gap-2">
                 <span className="text-5xl font-bold tracking-tighter">{data.score.toFixed(2)}</span>
                 <span className="text-xl text-neutral-500">/ 5.0</span>
+                <span className="ml-2 text-2xl font-semibold text-neutral-400">({score100.toFixed(0)}%)</span>
               </div>
             </div>
             <div className="text-left sm:text-right">
-              <Badge variant={getVariant(data.score)} className="px-4 py-1.5 text-sm bg-white text-neutral-950 border-transparent">
-                {data.score >= 4.0 ? "Sangat Baik" : data.score >= 3.0 ? "Cukup Baik" : "Perlu Perbaikan"}
+              <Badge className={`px-4 py-1.5 text-sm border-transparent ${scoreInfo.bg} ${scoreInfo.color}`}>
+                {scoreInfo.status}
               </Badge>
             </div>
           </div>
@@ -128,7 +140,23 @@ export function ResponseDetailDrawer({ isOpen, onClose, data }: ResponseDetailDr
 
         {/* Scrollable Content */}
         <div className="flex-grow overflow-y-auto p-8 space-y-10">
-          
+
+          <section>
+            <div className={`p-5 rounded-xl border ${scoreInfo.bg} border-white/50 shadow-sm relative overflow-hidden`}>
+              <div className="flex items-start gap-4 relative z-10">
+                <div className={`mt-0.5 w-10 h-10 rounded-full flex shrink-0 items-center justify-center bg-white shadow-sm ${scoreInfo.color}`}>
+                  <Info className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className={`text-sm font-bold uppercase tracking-widest mb-1 ${scoreInfo.color}`}>Informasi Hasil</h3>
+                  <p className="text-sm text-neutral-700 leading-relaxed font-medium">
+                    {scoreInfo.recommendation}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </section>
+
           {/* Metadata Grid */}
           <section>
             <h3 className="text-sm font-bold text-neutral-900 uppercase tracking-wider mb-4 border-b border-neutral-200 pb-2">Informasi Penilai</h3>
@@ -171,9 +199,9 @@ export function ResponseDetailDrawer({ isOpen, onClose, data }: ResponseDetailDr
                   <div key={dim.id} className="bg-white border border-neutral-200 rounded-md overflow-hidden shadow-sm">
                     <div className="bg-neutral-50/80 px-4 py-3 border-b border-neutral-200 flex justify-between items-center">
                       <h4 className="font-semibold text-neutral-900">{dim.title}</h4>
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm text-neutral-500 font-medium">Rata-rata:</span>
-                        <span className="bg-neutral-900 text-white px-2.5 py-0.5 rounded text-sm font-bold">{dimScore}</span>
+                      <div className="flex items-center gap-3">
+                        <span className="text-sm text-neutral-500 font-medium">Skor: <span className="text-neutral-900 font-bold">{dimScore}</span> <span className="text-neutral-400">/ 5.0</span></span>
+                        <span className="bg-neutral-900 text-white px-2.5 py-0.5 rounded text-sm font-bold">{(parseFloat(dimScore) / 5 * 100).toFixed(0)}%</span>
                       </div>
                     </div>
                     <div className="divide-y divide-neutral-100">
@@ -181,7 +209,7 @@ export function ResponseDetailDrawer({ isOpen, onClose, data }: ResponseDetailDr
                         const val = data.answers[q.id] || 0;
                         return (
                           <div key={q.id} className="px-4 py-3 flex justify-between gap-4">
-                            <p className="text-sm text-neutral-600 leading-relaxed">{idx + 1}. {q.text}</p>
+                            <p className="text-sm text-neutral-700 leading-relaxed">{idx + 1}. {q.text}</p>
                             <span className="font-semibold text-neutral-900 tabular-nums shrink-0">{val}</span>
                           </div>
                         );

@@ -33,7 +33,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Penilaian Restrukturisasi Kualitas Pelayanan Publik",
-    description: "Evaluasi internal kualitas layanan antar instansi pemerintahan.",
+    description: "Sistem yang dirancang untuk membantu Organisasi Perangkat Daerah (OPD) dalam melakukan evaluasi dan penilaian restrukturisasi organisasi berdasarkan indikator kualitas pelayanan publik.",
     images: ["/logo.png"],
   },
   robots: {

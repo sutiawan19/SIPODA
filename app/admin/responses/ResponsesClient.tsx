@@ -41,7 +41,7 @@ export function ResponsesClient({ initialResponses, institutions }: ResponsesCli
   const [search, setSearch] = useState("");
   const [instFilter, setInstFilter] = useState("Semua Instansi");
   const [dateFilter, setDateFilter] = useState("Semua Waktu");
-  
+
   const [isLoading, setIsLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
@@ -60,7 +60,7 @@ export function ResponsesClient({ initialResponses, institutions }: ResponsesCli
   };
 
   const handleSelectRow = (id: string) => {
-    setSelectedIds(prev => 
+    setSelectedIds(prev =>
       prev.includes(id) ? prev.filter(item => item !== id) : [...prev, id]
     );
   };
@@ -68,7 +68,7 @@ export function ResponsesClient({ initialResponses, institutions }: ResponsesCli
   const handleDeleteSelected = async () => {
     if (selectedIds.length === 0) return;
     if (!window.confirm(`Yakin ingin menghapus ${selectedIds.length} data penilaian? Data yang dihapus tidak dapat dikembalikan.`)) return;
-    
+
     setIsDeleting(true);
     try {
       await deleteMultipleResponses(selectedIds);
@@ -91,7 +91,7 @@ export function ResponsesClient({ initialResponses, institutions }: ResponsesCli
         "Instansi yang Dinilai": row.inst,
         "Skor Rata-rata": row.score
       };
-      
+
       // Append SERVQUAL answers
       Object.keys(row.answers || {}).forEach(k => {
         const title = QUESTION_MAPPING[k] || k;
@@ -102,7 +102,7 @@ export function ResponsesClient({ initialResponses, institutions }: ResponsesCli
     });
 
     const worksheet = XLSX.utils.json_to_sheet(worksheetData);
-    
+
     // 1. Set column widths
     const wscols = [
       { wch: 15 }, // ID Penilaian
@@ -160,7 +160,7 @@ export function ResponsesClient({ initialResponses, institutions }: ResponsesCli
 
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "Data Penilaian");
-    
+
     XLSX.writeFile(workbook, `Data_Penilaian_Restrukturisasi_${new Date().toISOString().split('T')[0]}.xlsx`);
   };
 
@@ -177,11 +177,11 @@ export function ResponsesClient({ initialResponses, institutions }: ResponsesCli
 
   const filteredData = useMemo(() => {
     return initialResponses.filter((item) => {
-      const matchSearch = item.inst.toLowerCase().includes(search.toLowerCase()) || 
-                          item.response_code.toLowerCase().includes(search.toLowerCase()) ||
-                          item.nama_penilai.toLowerCase().includes(search.toLowerCase());
+      const matchSearch = item.inst.toLowerCase().includes(search.toLowerCase()) ||
+        item.response_code.toLowerCase().includes(search.toLowerCase()) ||
+        item.nama_penilai.toLowerCase().includes(search.toLowerCase());
       const matchInst = instFilter === "Semua Instansi" || item.inst === instFilter;
-      const matchDate = dateFilter === "Semua Waktu" || true; 
+      const matchDate = dateFilter === "Semua Waktu" || true;
 
       return matchSearch && matchInst && matchDate;
     });
@@ -192,7 +192,7 @@ export function ResponsesClient({ initialResponses, institutions }: ResponsesCli
 
   return (
     <div className="min-h-screen bg-white font-sans text-neutral-900 pb-20">
-      
+
       {/* Header Section */}
       <div className="pt-12 pb-6 px-6 md:px-12 max-w-[1400px] mx-auto border-b border-neutral-100 mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
@@ -202,14 +202,13 @@ export function ResponsesClient({ initialResponses, institutions }: ResponsesCli
           </p>
         </div>
         <div className="flex gap-3 pb-4">
-          <button 
-            onClick={handleDeleteSelected} 
-            disabled={isDeleting || selectedIds.length === 0} 
-            className={`inline-flex items-center justify-center gap-2 px-5 py-2.5 text-sm font-medium rounded-full transition-all shadow-sm ${
-              selectedIds.length > 0 
-                ? "bg-red-50 text-red-600 hover:bg-red-100 cursor-pointer" 
+          <button
+            onClick={handleDeleteSelected}
+            disabled={isDeleting || selectedIds.length === 0}
+            className={`inline-flex items-center justify-center gap-2 px-5 py-2.5 text-sm font-medium rounded-full transition-all shadow-sm ${selectedIds.length > 0
+                ? "bg-red-50 text-red-600 hover:bg-red-100 cursor-pointer"
                 : "bg-neutral-100 text-neutral-400 cursor-not-allowed"
-            }`}
+              }`}
           >
             {isDeleting ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Trash2 className="w-4 h-4 mr-2" />}
             Hapus {selectedIds.length > 0 ? `${selectedIds.length} Terpilih` : "Terpilih"}
@@ -222,7 +221,7 @@ export function ResponsesClient({ initialResponses, institutions }: ResponsesCli
       </div>
 
       <div className="px-6 md:px-12 max-w-[1400px] mx-auto space-y-12">
-        <motion.div 
+        <motion.div
           initial="hidden"
           animate="show"
           variants={{
@@ -235,13 +234,13 @@ export function ResponsesClient({ initialResponses, institutions }: ResponsesCli
           <div className="flex flex-col xl:flex-row items-start xl:items-center gap-6 justify-between">
             <div className="flex items-center gap-3 text-neutral-900">
               <div className="w-10 h-10 rounded-full bg-neutral-100 flex items-center justify-center">
-                <Filter className="w-4 h-4 text-neutral-600" />
+                <Filter className="w-4 h-4 text-neutral-700" />
               </div>
               <span className="font-semibold text-lg tracking-tight">Saring Data</span>
             </div>
-          
+
             <div className="flex flex-wrap xl:flex-nowrap items-center gap-3 w-full xl:w-auto">
-              
+
               {/* Search */}
               <div className="relative w-full sm:w-64">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -300,13 +299,13 @@ export function ResponsesClient({ initialResponses, institutions }: ResponsesCli
                 <Loader2 className="w-6 h-6 animate-spin text-neutral-900" />
               </div>
             )}
-            
+
             <table className="w-full text-left text-sm whitespace-nowrap">
               <thead className="bg-neutral-50 text-neutral-500 text-xs uppercase tracking-wider relative z-0">
                 <tr>
                   <th className="py-4 px-6 font-medium rounded-tl-2xl w-10">
-                    <input 
-                      type="checkbox" 
+                    <input
+                      type="checkbox"
                       className="rounded-sm border-neutral-300 w-4 h-4 cursor-pointer"
                       checked={paginatedData.length > 0 && paginatedData.every(row => selectedIds.includes(row.id))}
                       onChange={handleSelectAll}
@@ -333,21 +332,21 @@ export function ResponsesClient({ initialResponses, institutions }: ResponsesCli
                   </tr>
                 ) : (
                   paginatedData.map((row) => (
-                    <tr 
-                      key={row.id} 
+                    <tr
+                      key={row.id}
                       onClick={() => setSelectedResponse(row)}
                       className="hover:bg-neutral-50 transition-colors cursor-pointer group"
                     >
                       <td className="px-6 py-4" onClick={(e) => e.stopPropagation()}>
-                        <input 
-                          type="checkbox" 
+                        <input
+                          type="checkbox"
                           className="rounded-sm border-neutral-300 w-4 h-4 cursor-pointer"
                           checked={selectedIds.includes(row.id)}
                           onChange={() => handleSelectRow(row.id)}
                         />
                       </td>
-                      <td className="px-6 py-4 font-mono text-neutral-900 font-medium group-hover:text-neutral-600 transition-colors">{row.response_code.replace(/^ASM-/, "")}</td>
-                      <td className="px-6 py-4 text-neutral-600">{row.date}</td>
+                      <td className="px-6 py-4 font-mono text-neutral-900 font-medium group-hover:text-neutral-700 transition-colors">{row.response_code.replace(/^ASM-/, "")}</td>
+                      <td className="px-6 py-4 text-neutral-700">{row.date}</td>
                       <td className="px-6 py-4 text-neutral-500 max-w-[150px] truncate">{row.jabatan}</td>
                       <td className="px-6 py-4 text-neutral-500 max-w-[150px] truncate">{row.kecamatan}</td>
                       <td className="px-6 py-4 font-medium text-neutral-900 max-w-[300px] truncate" title={row.inst}>{row.inst}</td>
@@ -357,8 +356,8 @@ export function ResponsesClient({ initialResponses, institutions }: ResponsesCli
                         </div>
                       </td>
                       <td className="px-6 py-4 text-right">
-                        <button 
-                          className="inline-flex items-center justify-center px-3 py-1.5 text-sm font-medium bg-neutral-100 text-neutral-600 rounded-lg hover:bg-neutral-200 transition-colors"
+                        <button
+                          className="inline-flex items-center justify-center px-3 py-1.5 text-sm font-medium bg-neutral-100 text-neutral-700 rounded-lg hover:bg-neutral-200 transition-colors"
                           onClick={(e) => {
                             e.stopPropagation();
                             setSelectedResponse(row);
@@ -381,7 +380,7 @@ export function ResponsesClient({ initialResponses, institutions }: ResponsesCli
               <div className="flex items-center gap-2 whitespace-nowrap">
                 <span>Tampilkan</span>
                 <div className="w-[85px] z-20">
-                  <Select 
+                  <Select
                     value={String(itemsPerPage)}
                     onChange={(val) => {
                       setItemsPerPage(Number(val));
@@ -400,14 +399,14 @@ export function ResponsesClient({ initialResponses, institutions }: ResponsesCli
               </div>
             </div>
             <div className="flex gap-2">
-              <button 
+              <button
                 className="inline-flex items-center justify-center w-10 h-10 border border-neutral-200 text-neutral-500 bg-white rounded-full hover:bg-neutral-50 hover:text-neutral-900 disabled:opacity-50 disabled:pointer-events-none transition-all shadow-sm"
                 disabled={currentPage === 1}
                 onClick={() => setCurrentPage(p => p - 1)}
               >
                 <ChevronLeft className="w-4 h-4" />
               </button>
-              <button 
+              <button
                 className="inline-flex items-center justify-center w-10 h-10 border border-neutral-200 text-neutral-500 bg-white rounded-full hover:bg-neutral-50 hover:text-neutral-900 disabled:opacity-50 disabled:pointer-events-none transition-all shadow-sm"
                 disabled={currentPage === totalPages || totalPages === 0}
                 onClick={() => setCurrentPage(p => p + 1)}
@@ -421,10 +420,10 @@ export function ResponsesClient({ initialResponses, institutions }: ResponsesCli
       </div>
 
       {/* Response Detail Drawer */}
-      <ResponseDetailDrawer 
-        isOpen={!!selectedResponse} 
-        onClose={() => setSelectedResponse(null)} 
-        data={selectedResponse} 
+      <ResponseDetailDrawer
+        isOpen={!!selectedResponse}
+        onClose={() => setSelectedResponse(null)}
+        data={selectedResponse}
       />
 
     </div>

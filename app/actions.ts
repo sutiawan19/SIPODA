@@ -35,19 +35,14 @@ export async function submitAssessment(payload: AssessmentPayload) {
       jabatan: payload.jabatan,
       kecamatan: payload.kecamatan,
       answers: payload.answers,
-      overall_score: overall_score,
-      nama_penilai: null,
-      provinsi: null,
-      kabupaten_kota: null,
-      obstacle: null,
-      suggestion: null
+      overall_score: overall_score
     } as any)
     .select()
     .single();
 
   if (error) {
     console.error('Submit Error:', error)
-    throw new Error('Gagal menyimpan penilaian. Pastikan skema database sudah diperbarui.')
+    throw new Error('Gagal menyimpan: ' + error.message)
   }
 
   return { success: true, responseCode }

@@ -51,9 +51,8 @@ export function Select({ value, onChange, options, placeholder, className = "", 
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: position === "top" ? 10 : -10 }}
             transition={{ duration: 0.15 }}
-            className={`absolute z-50 w-full min-w-[200px] bg-white border border-neutral-200 rounded-lg shadow-lg py-1 max-h-60 overflow-auto ${
-              position === "top" ? "bottom-full mb-1" : "top-full mt-1"
-            }`}
+            className={`absolute z-50 w-full min-w-[200px] bg-white border border-neutral-200 rounded-lg shadow-lg py-1 max-h-60 overflow-auto ${position === "top" ? "bottom-full mb-1" : "top-full mt-1"
+              }`}
           >
             {options.map((option) => (
               <button
@@ -65,7 +64,7 @@ export function Select({ value, onChange, options, placeholder, className = "", 
                   setIsOpen(false);
                 }}
               >
-                <span className={value === option.value ? "font-medium text-neutral-900" : "text-neutral-600"}>
+                <span className={value === option.value ? "font-medium text-neutral-900" : "text-neutral-700"}>
                   {option.label}
                 </span>
                 {value === option.value && <Check className="w-4 h-4 text-neutral-900 shrink-0" />}
