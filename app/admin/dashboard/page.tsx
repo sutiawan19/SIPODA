@@ -1,7 +1,18 @@
 import { createClient } from '@/lib/supabase/server'
 import { DashboardClient } from './DashboardClient'
 
+import { Metadata } from 'next'
+
 export const dynamic = 'force-dynamic'
+
+export const metadata: Metadata = {
+  title: 'Dashboard Admin | Penilaian Restrukturisasi Berbasis Kualitas Pelayanan Publik',
+  description: 'Dashboard administrator.',
+  robots: {
+    index: false,
+    follow: false,
+  },
+}
 
 export default async function AdminDashboardPage() {
   const supabase = await createClient()

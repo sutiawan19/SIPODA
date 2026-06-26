@@ -1,7 +1,17 @@
 import { createClient } from '@/lib/supabase/server'
 import AssessmentClient from './AssessmentClient'
 
+import { Metadata } from 'next'
+
 export const dynamic = 'force-dynamic'
+
+export const metadata: Metadata = {
+  title: 'Penilaian Restrukturisasi Berbasis Kualitas Pelayanan Publik',
+  description: 'Website Penilaian Restrukturisasi Berbasis Kualitas Pelayanan Publik untuk membantu Organisasi Perangkat Daerah (OPD) dalam melakukan evaluasi organisasi berdasarkan indikator kualitas pelayanan publik.',
+  alternates: {
+    canonical: '/',
+  },
+}
 
 export default async function Home() {
   const supabase = await createClient()

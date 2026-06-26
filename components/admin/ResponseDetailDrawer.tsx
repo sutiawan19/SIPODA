@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Drawer } from "@/components/ui/Drawer";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
-import { Loader2, Trash2, MapPin, Building2, User, Briefcase, Info } from "lucide-react";
+import { Loader2, Trash2, MapPin, Building2, User, Briefcase, Info, Sparkles } from "lucide-react";
 import { deleteMultipleResponses } from "@/app/admin/responses/actions";
 import { useRouter } from "next/navigation";
 
@@ -64,15 +64,15 @@ const DIMENSIONS = [
 
 function getScoreData(score100: number) {
   if (score100 <= 20) {
-    return { status: "Sangat Tidak Baik", recommendation: "Kondisi sangat jauh dari harapan dan hampir tidak mendukung pelayanan. Indikator tidak berjalan dengan baik, sering menimbulkan hambatan, keluhan, atau kegagalan dalam proses pelayanan.", color: "text-rose-600", bg: "bg-rose-50" };
+    return { status: "Sangat Tidak Baik", recommendation: "Kondisi sangat jauh dari harapan dan hampir tidak mendukung pelayanan. Indikator tidak berjalan dengan baik, sering menimbulkan hambatan, keluhan, atau kegagalan dalam proses pelayanan.", rekomendasi: "Menyusun ulang visi, misi serta tujuan yang berbasis kualitas pelayanan publik.", color: "text-rose-600", bg: "bg-rose-50" };
   } else if (score100 <= 40) {
-    return { status: "Tidak Baik", recommendation: "Kondisi masih kurang memadai dan belum mampu mendukung pelayanan secara optimal. Indikator sudah ada atau diterapkan, tetapi pelaksanaannya masih banyak kekurangan sehingga pelayanan sering terganggu.", color: "text-amber-600", bg: "bg-amber-50" };
+    return { status: "Tidak Baik", recommendation: "Kondisi masih kurang memadai dan belum mampu mendukung pelayanan secara optimal. Indikator sudah ada atau diterapkan, tetapi pelaksanaannya masih banyak kekurangan sehingga pelayanan sering terganggu.", rekomendasi: "Lakukan survei kepuasan kepada masyarakat untuk dasar perbaikan pelayanan.", color: "text-amber-600", bg: "bg-amber-50" };
   } else if (score100 <= 60) {
-    return { status: "Cukup", recommendation: "Kondisi cukup memadai dan mampu mendukung pelayanan pada tingkat dasar. Indikator telah berjalan sesuai standar minimum, namun masih terdapat beberapa kelemahan yang perlu diperbaiki.", color: "text-violet-600", bg: "bg-violet-50" };
+    return { status: "Cukup", recommendation: "Kondisi cukup memadai dan mampu mendukung pelayanan pada tingkat dasar. Indikator telah berjalan sesuai standar minimum, namun masih terdapat beberapa kelemahan yang perlu diperbaiki.", rekomendasi: "Menguatkan kualitas SDM melalui berbagai pelatihan berbasis kompetensi.", color: "text-violet-600", bg: "bg-violet-50" };
   } else if (score100 <= 80) {
-    return { status: "Baik", recommendation: "Kondisi sudah berjalan dengan baik dan mendukung pelayanan secara efektif. Indikator terlaksana secara konsisten, hanya terdapat sedikit kendala yang tidak terlalu memengaruhi kualitas pelayanan.", color: "text-blue-600", bg: "bg-blue-50" };
+    return { status: "Baik", recommendation: "Kondisi sudah berjalan dengan baik dan mendukung pelayanan secara efektif. Indikator terlaksana secara konsisten, hanya terdapat sedikit kendala yang tidak terlalu memengaruhi kualitas pelayanan.", rekomendasi: "Mengembangkan sistem serta inovasi pelayanan publik.", color: "text-blue-600", bg: "bg-blue-50" };
   } else {
-    return { status: "Sangat Baik", recommendation: "Kondisi sangat optimal dan menjadi pendukung utama kualitas pelayanan. Indikator berjalan secara maksimal, efektif, efisien, dan mampu memberikan dampak positif yang signifikan terhadap pelayanan.", color: "text-emerald-600", bg: "bg-emerald-50" };
+    return { status: "Sangat Baik", recommendation: "Kondisi sangat optimal dan menjadi pendukung utama kualitas pelayanan. Indikator berjalan secara maksimal, efektif, efisien, dan mampu memberikan dampak positif yang signifikan terhadap pelayanan.", rekomendasi: "Mempertahankan dan mengembangkan inovasi pelayanan publik berkelanjutan.", color: "text-emerald-600", bg: "bg-emerald-50" };
   }
 }
 
@@ -141,7 +141,7 @@ export function ResponseDetailDrawer({ isOpen, onClose, data }: ResponseDetailDr
         {/* Scrollable Content */}
         <div className="flex-grow overflow-y-auto p-8 space-y-10">
 
-          <section>
+          <section className="space-y-4">
             <div className={`p-5 rounded-xl border ${scoreInfo.bg} border-white/50 shadow-sm relative overflow-hidden`}>
               <div className="flex items-start gap-4 relative z-10">
                 <div className={`mt-0.5 w-10 h-10 rounded-full flex shrink-0 items-center justify-center bg-white shadow-sm ${scoreInfo.color}`}>
@@ -151,6 +151,20 @@ export function ResponseDetailDrawer({ isOpen, onClose, data }: ResponseDetailDr
                   <h3 className={`text-sm font-bold uppercase tracking-widest mb-1 ${scoreInfo.color}`}>Informasi Hasil</h3>
                   <p className="text-sm text-neutral-700 leading-relaxed font-medium">
                     {scoreInfo.recommendation}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className={`p-5 rounded-xl border ${scoreInfo.bg} border-white/50 shadow-sm relative overflow-hidden`}>
+              <div className="flex items-start gap-4 relative z-10">
+                <div className={`mt-0.5 w-10 h-10 rounded-full flex shrink-0 items-center justify-center bg-white shadow-sm ${scoreInfo.color}`}>
+                  <Sparkles className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className={`text-sm font-bold uppercase tracking-widest mb-1 ${scoreInfo.color}`}>Rekomendasi</h3>
+                  <p className="text-sm text-neutral-700 leading-relaxed font-medium">
+                    {scoreInfo.rekomendasi}
                   </p>
                 </div>
               </div>

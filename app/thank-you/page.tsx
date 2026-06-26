@@ -13,6 +13,7 @@ function getScoreData(score: number) {
     return {
       status: "Sangat Tidak Baik",
       recommendation: "Kondisi sangat jauh dari harapan dan hampir tidak mendukung pelayanan. Indikator tidak berjalan dengan baik, sering menimbulkan hambatan, keluhan, atau kegagalan dalam proses pelayanan.",
+      rekomendasi: "Menyusun ulang visi, misi serta tujuan yang berbasis kualitas pelayanan publik.",
       textColor: "text-rose-600",
       bgSoft: "bg-rose-50",
       borderSoft: "border-rose-100",
@@ -22,6 +23,7 @@ function getScoreData(score: number) {
     return {
       status: "Tidak Baik",
       recommendation: "Kondisi masih kurang memadai dan belum mampu mendukung pelayanan secara optimal. Indikator sudah ada atau diterapkan, tetapi pelaksanaannya masih banyak kekurangan sehingga pelayanan sering terganggu.",
+      rekomendasi: "Lakukan survei kepuasan kepada masyarakat untuk dasar perbaikan pelayanan.",
       textColor: "text-amber-600",
       bgSoft: "bg-amber-50",
       borderSoft: "border-amber-100",
@@ -31,6 +33,7 @@ function getScoreData(score: number) {
     return {
       status: "Cukup",
       recommendation: "Kondisi cukup memadai dan mampu mendukung pelayanan pada tingkat dasar. Indikator telah berjalan sesuai standar minimum, namun masih terdapat beberapa kelemahan yang perlu diperbaiki.",
+      rekomendasi: "Menguatkan kualitas SDM melalui berbagai pelatihan berbasis kompetensi.",
       textColor: "text-violet-600",
       bgSoft: "bg-violet-50",
       borderSoft: "border-violet-100",
@@ -40,6 +43,7 @@ function getScoreData(score: number) {
     return {
       status: "Baik",
       recommendation: "Kondisi sudah berjalan dengan baik dan mendukung pelayanan secara efektif. Indikator terlaksana secara konsisten, hanya terdapat sedikit kendala yang tidak terlalu memengaruhi kualitas pelayanan.",
+      rekomendasi: "Mengembangkan sistem serta inovasi pelayanan publik.",
       textColor: "text-blue-600",
       bgSoft: "bg-blue-50",
       borderSoft: "border-blue-100",
@@ -49,6 +53,7 @@ function getScoreData(score: number) {
     return {
       status: "Sangat Baik",
       recommendation: "Kondisi sangat optimal dan menjadi pendukung utama kualitas pelayanan. Indikator berjalan secara maksimal, efektif, efisien, dan mampu memberikan dampak positif yang signifikan terhadap pelayanan.",
+      rekomendasi: "Mempertahankan dan mengembangkan inovasi pelayanan publik berkelanjutan.",
       textColor: "text-emerald-600",
       bgSoft: "bg-emerald-50",
       borderSoft: "border-emerald-100",
@@ -194,26 +199,48 @@ function ThankYouContent() {
                 </div>
               )}
 
-              <div className="relative mt-12">
-                {/* Floating Label */}
-                <div className={`absolute -top-3 left-4 px-3 py-1 bg-white rounded-full border shadow-sm flex items-center gap-1.5 ${data.borderSoft} z-20`}>
-                  <Lightbulb className={`w-3.5 h-3.5 ${data.textColor}`} />
-                  <span className={`text-[10px] font-extrabold uppercase tracking-widest ${data.textColor}`}>
-                    Informasi Hasil
-                  </span>
-                </div>
+              <div className="relative mt-12 space-y-6">
                 
-                {/* Main Card Content */}
-                <div className={`relative p-5 md:p-6 pt-7 rounded-2xl border shadow-sm ${data.borderSoft} ${data.bgSoft} bg-opacity-40 overflow-hidden`}>
-                  <p className="text-sm font-semibold text-neutral-800 leading-relaxed text-justify relative z-10">
-                    {data.recommendation}
-                  </p>
+                {/* Informasi Hasil Box */}
+                <div className="relative">
+                  <div className={`absolute -top-3 left-4 px-3 py-1 bg-white rounded-full border shadow-sm flex items-center gap-1.5 ${data.borderSoft} z-20`}>
+                    <Lightbulb className={`w-3.5 h-3.5 ${data.textColor}`} />
+                    <span className={`text-[10px] font-extrabold uppercase tracking-widest ${data.textColor}`}>
+                      Informasi Hasil
+                    </span>
+                  </div>
                   
-                  {/* Background Watermark */}
-                  <div className={`absolute -right-6 -bottom-6 opacity-[0.04] pointer-events-none ${data.textColor}`}>
-                    <CheckCircle2 className="w-36 h-36" />
+                  <div className={`relative p-5 md:p-6 pt-7 rounded-2xl border shadow-sm ${data.borderSoft} ${data.bgSoft} bg-opacity-40 overflow-hidden`}>
+                    <p className="text-sm font-semibold text-neutral-800 leading-relaxed text-justify relative z-10">
+                      {data.recommendation}
+                    </p>
+                    
+                    <div className={`absolute -right-6 -bottom-6 opacity-[0.04] pointer-events-none ${data.textColor}`}>
+                      <CheckCircle2 className="w-36 h-36" />
+                    </div>
                   </div>
                 </div>
+
+                {/* Rekomendasi Box */}
+                <div className="relative">
+                  <div className={`absolute -top-3 left-4 px-3 py-1 bg-white rounded-full border shadow-sm flex items-center gap-1.5 ${data.borderSoft} z-20`}>
+                    <Sparkles className={`w-3.5 h-3.5 ${data.textColor}`} />
+                    <span className={`text-[10px] font-extrabold uppercase tracking-widest ${data.textColor}`}>
+                      Rekomendasi
+                    </span>
+                  </div>
+                  
+                  <div className={`relative p-5 md:p-6 pt-7 rounded-2xl border shadow-sm ${data.borderSoft} ${data.bgSoft} bg-opacity-40 overflow-hidden`}>
+                    <p className="text-sm font-semibold text-neutral-800 leading-relaxed text-justify relative z-10">
+                      {data.rekomendasi}
+                    </p>
+                    
+                    <div className={`absolute -right-6 -bottom-6 opacity-[0.04] pointer-events-none ${data.textColor}`}>
+                      <CheckCircle2 className="w-36 h-36" />
+                    </div>
+                  </div>
+                </div>
+
               </div>
             </div>
           </motion.div>

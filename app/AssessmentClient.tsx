@@ -351,6 +351,7 @@ export default function AssessmentClient({ institutions }: { institutions: any[]
                         {mounted && (
                           <Select
                             instanceId="jabatan-select"
+                            aria-label="Jabatan"
                             options={JABATAN_OPTIONS}
                             styles={customSelectStyles}
                             placeholder="Pilih jabatan Anda"
@@ -368,6 +369,7 @@ export default function AssessmentClient({ institutions }: { institutions: any[]
                           {mounted && (
                             <Select
                               instanceId="kecamatan-select"
+                              aria-label="Kecamatan"
                               options={districts.map(d => ({ value: d.name, label: d.name }))}
                               styles={customSelectStyles}
                               placeholder="Ketik atau pilih Kecamatan..."
@@ -393,6 +395,7 @@ export default function AssessmentClient({ institutions }: { institutions: any[]
                         {mounted && (
                           <Select
                             instanceId="inst-dinilai-select"
+                            aria-label="Instansi yang Dinilai"
                             options={institutions.map(inst => ({ value: inst.id, label: inst.name }))}
                             styles={{
                               ...customSelectStyles,
@@ -452,6 +455,7 @@ export default function AssessmentClient({ institutions }: { institutions: any[]
                                     <button
                                       type="button"
                                       key={opt.value}
+                                      aria-label={`${opt.label} (${opt.value})`}
                                       onClick={() => {
                                         setAnswers(prev => ({ ...prev, [q.id]: opt.value }));
                                         setMissingFields(m => m.filter(x => x !== `field-${q.id}`));
