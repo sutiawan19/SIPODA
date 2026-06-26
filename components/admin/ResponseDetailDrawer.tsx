@@ -19,40 +19,45 @@ const DIMENSIONS = [
     id: "tangibles",
     title: "Tangibles (Bukti Fisik)",
     questions: [
-      { id: "tangibles_1", text: "Fasilitas fisik, ruang pelayanan, kenyamanan." },
-      { id: "tangibles_2", text: "Peralatan, komputer, sistem antrean, website." }
+      { id: "tangibles_1", text: "Pemanfaatan sarana dan prasarana pelayanan publik." },
+      { id: "tangibles_2", text: "Pemanfaatan teknologi dalam proses pelayanan." },
+      { id: "tangibles_3", text: "Pemanfaatan SDM dalam meningkatkan kualitas pelayanan." }
     ]
   },
   {
     id: "reliability",
     title: "Reliability (Keandalan)",
     questions: [
-      { id: "reliability_1", text: "Sesuai prosedur & waktu yang dijanjikan." },
-      { id: "reliability_2", text: "Akurat dan tidak ada kesalahan." }
+      { id: "reliability_1", text: "Pembagian tugas serta kewenangan dalam organisasi." },
+      { id: "reliability_2", text: "Prosedur pelayanan dalam mendukung kelancaran pelayanan." },
+      { id: "reliability_3", text: "Ketepatan waktu dalam penyelesaian pelayanan." }
     ]
   },
   {
     id: "responsiveness",
-    title: "Responsiveness (Ketanggapan)",
+    title: "Responsiveness (Daya Tanggap)",
     questions: [
-      { id: "responsiveness_1", text: "Pelayanan cepat dan tidak berbelit." },
-      { id: "responsiveness_2", text: "Tanggap membantu kendala." }
+      { id: "responsiveness_1", text: "Arahan pemimpin dalam mendukung pelayanan." },
+      { id: "responsiveness_2", text: "Kerja sama antarbidang dalam menyelesaikan suatu masalah." },
+      { id: "responsiveness_3", text: "Komunikasi antarunit kerja." }
     ]
   },
   {
     id: "assurance",
     title: "Assurance (Jaminan)",
     questions: [
-      { id: "assurance_1", text: "Kemampuan petugas memadai." },
-      { id: "assurance_2", text: "Sikap yang membuat nyaman dan percaya." }
+      { id: "assurance_1", text: "Pengawasan terhadap pelaksanaan pelayanan." },
+      { id: "assurance_2", text: "Kompetensi pegawai." },
+      { id: "assurance_3", text: "Pengembangan dan pelatihan pegawai." }
     ]
   },
   {
     id: "empathy",
     title: "Empathy (Empati)",
     questions: [
-      { id: "empathy_1", text: "Perhatian khusus terhadap keluhan individu." },
-      { id: "empathy_2", text: "Bersikap ramah dan sopan." }
+      { id: "empathy_1", text: "Dukungan pemimpin dalam menyelesaikan kendala." },
+      { id: "empathy_2", text: "Evaluasi yang dilakukan pemimpin." },
+      { id: "empathy_3", text: "Jumlah pegawai yang tersedia." }
     ]
   }
 ];
@@ -129,13 +134,6 @@ export function ResponseDetailDrawer({ isOpen, onClose, data }: ResponseDetailDr
             <h3 className="text-sm font-bold text-neutral-900 uppercase tracking-wider mb-4 border-b border-neutral-200 pb-2">Informasi Penilai</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="flex items-start gap-3 bg-white p-4 rounded-md border border-neutral-200 shadow-sm">
-                <User className="w-5 h-5 text-neutral-400 mt-0.5" />
-                <div>
-                  <p className="text-xs text-neutral-500 uppercase tracking-wider font-medium">Nama Lengkap</p>
-                  <p className="text-sm font-semibold text-neutral-900 mt-1">{data.nama_penilai}</p>
-                </div>
-              </div>
-              <div className="flex items-start gap-3 bg-white p-4 rounded-md border border-neutral-200 shadow-sm">
                 <Briefcase className="w-5 h-5 text-neutral-400 mt-0.5" />
                 <div>
                   <p className="text-xs text-neutral-500 uppercase tracking-wider font-medium">Jabatan</p>
@@ -145,9 +143,9 @@ export function ResponseDetailDrawer({ isOpen, onClose, data }: ResponseDetailDr
               <div className="flex items-start gap-3 bg-white p-4 rounded-md border border-neutral-200 shadow-sm">
                 <MapPin className="w-5 h-5 text-neutral-400 mt-0.5" />
                 <div>
-                  <p className="text-xs text-neutral-500 uppercase tracking-wider font-medium">Lokasi</p>
+                  <p className="text-xs text-neutral-500 uppercase tracking-wider font-medium">Lokasi / Kecamatan</p>
                   <p className="text-sm font-semibold text-neutral-900 mt-1">
-                    {data.kecamatan}, {data.kabupaten_kota}, {data.provinsi}
+                    {data.kecamatan}
                   </p>
                 </div>
               </div>
@@ -166,9 +164,8 @@ export function ResponseDetailDrawer({ isOpen, onClose, data }: ResponseDetailDr
             <h3 className="text-sm font-bold text-neutral-900 uppercase tracking-wider mb-4 border-b border-neutral-200 pb-2">Rincian Penilaian per Dimensi</h3>
             <div className="space-y-6">
               {DIMENSIONS.map((dim) => {
-                const q1 = data.answers[dim.questions[0].id] || 0;
-                const q2 = data.answers[dim.questions[1].id] || 0;
-                const dimScore = ((q1 + q2) / 2).toFixed(1);
+                const total = dim.questions.reduce((sum, q) => sum + (data.answers[q.id] || 0), 0);
+                const dimScore = (total / dim.questions.length).toFixed(1);
 
                 return (
                   <div key={dim.id} className="bg-white border border-neutral-200 rounded-md overflow-hidden shadow-sm">

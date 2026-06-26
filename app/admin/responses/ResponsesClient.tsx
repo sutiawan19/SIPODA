@@ -15,20 +15,21 @@ const FADE_UP = {
 };
 
 const QUESTION_MAPPING: Record<string, string> = {
-  tangibles_1: "Fasilitas fisik seperti ruang pelayanan serta kenyamanan yang disediakan di tempat pelayanan sudah memadai.",
-  tangibles_2: "Peralatan serta teknologi seperti komputer, sistem antrean, dan website apakah sudah mendukung pelayanan yang baik.",
-  reliability_1: "Apakah pelayanan yang diberikan sudah sesuai dengan prosedur dan waktu yang sudah dijanjikan.",
-  reliability_2: "Apakah hasil pelayanan yang diterima sudah akurat dan tidak ada kesalahan.",
-  responsiveness_1: "Apakah petugas sudah memberikan pelayanan dengan cepat serta tidak berbelit-belit.",
-  responsiveness_2: "Apakah petugas tanggap dalam membantu saya dalam menghadapi kendala.",
-  assurance_1: "Apakah petugas mempunyai kemampuan yang baik dalam memberikan pelayanan.",
-  assurance_2: "Apakah sikap petugas membuat anda merasa nyaman serta percaya dalam pelayanan.",
-  empathy_1: "Apakah petugas sudah memberikan perhatian terhadap keluhan anda secara individu.",
-  empathy_2: "Apakah petugas bersikap ramah serta sopan selama pelayanan berlangsung.",
-  sdm_1: "Apakah instansi sudah meningkatkan kualitas aparatur agar lebih responsif?",
-  sdm_2: "Apakah beban kerja dan pembagian pegawai sesuai dengan jabatan?",
-  koordinasi_1: "Apakah sering terjadi tumpah tindih antar kewenangan.",
-  koordinasi_2: "Seberapa sering rapat koordinasi antar bidang diadakan?"
+  tangibles_1: "Seberapa baik pemanfaatan sarana dan prasarana pelayanan publik?",
+  tangibles_2: "Seberapa baik pemanfaatan teknologi dalam proses pelayanan?",
+  tangibles_3: "Seberapa baik pemanfaatan sumber daya manusia dalam meningkatkan kualitas pelayanan?",
+  reliability_1: "Seberapa baik pembagian tugas serta kewenangan dalam organisasi?",
+  reliability_2: "Seberapa baik prosedur pelayanan dalam mendukung kelancaran pelayanan?",
+  reliability_3: "Seberapa baik ketepatan waktu dalam penyelesaian pelayanan?",
+  responsiveness_1: "Seberapa baik arahan pemimpin dalam mendukung pelayanan?",
+  responsiveness_2: "Seberapa baik kerja sama antarbidang dalam menyelesaikan suatu masalah?",
+  responsiveness_3: "Seberapa baik komunikasi antarunit kerja?",
+  assurance_1: "Seberapa baik pengawasan terhadap pelaksanaan pelayanan?",
+  assurance_2: "Seberapa baik kompetensi pegawai?",
+  assurance_3: "Seberapa baik pengembangan dan pelatihan pegawai?",
+  empathy_1: "Seberapa baik dukungan pemimpin dalam menyelesaikan kendala?",
+  empathy_2: "Seberapa baik evaluasi yang dilakukan pemimpin?",
+  empathy_3: "Seberapa baik jumlah pegawai yang tersedia?"
 };
 
 interface ResponsesClientProps {
@@ -85,10 +86,7 @@ export function ResponsesClient({ initialResponses, institutions }: ResponsesCli
       const exportRow: any = {
         "ID Penilaian": row.response_code.replace(/^ASM-/, ""),
         "Tanggal": row.date,
-        "Nama Penilai": row.nama_penilai,
         "Jabatan": row.jabatan,
-        "Provinsi": row.provinsi,
-        "Kabupaten/Kota": row.kabupaten_kota,
         "Kecamatan": row.kecamatan,
         "Instansi yang Dinilai": row.inst,
         "Skor Rata-rata": row.score
@@ -109,10 +107,7 @@ export function ResponsesClient({ initialResponses, institutions }: ResponsesCli
     const wscols = [
       { wch: 15 }, // ID Penilaian
       { wch: 15 }, // Tanggal
-      { wch: 25 }, // Nama Penilai
       { wch: 20 }, // Jabatan
-      { wch: 20 }, // Provinsi
-      { wch: 20 }, // Kabupaten/Kota
       { wch: 20 }, // Kecamatan
       { wch: 30 }, // Instansi
       { wch: 15 }  // Skor Rata-rata
@@ -146,7 +141,7 @@ export function ResponsesClient({ initialResponses, institutions }: ResponsesCli
         } else {
           // Data row styling
           let hAlign = "left";
-          if (C > 7) {
+          if (C > 4) {
             hAlign = "center"; // Skor Rata-rata and Questions
           }
 
@@ -319,9 +314,9 @@ export function ResponsesClient({ initialResponses, institutions }: ResponsesCli
                   </th>
                   <th className="py-4 px-6 font-medium w-24">ID Penilaian</th>
                   <th className="py-4 px-6 font-medium">Tanggal</th>
-                  <th className="py-4 px-6 font-medium">Penilai</th>
-                  <th className="py-4 px-6 font-medium">Instansi Dinilai</th>
                   <th className="py-4 px-6 font-medium">Jabatan</th>
+                  <th className="py-4 px-6 font-medium">Kecamatan</th>
+                  <th className="py-4 px-6 font-medium">Instansi Dinilai</th>
                   <th className="py-4 px-6 font-medium w-20 text-center">Skor</th>
                   <th className="py-4 px-6 font-medium rounded-tr-2xl text-right">Aksi</th>
                 </tr>
@@ -329,7 +324,7 @@ export function ResponsesClient({ initialResponses, institutions }: ResponsesCli
               <tbody className="divide-y divide-neutral-100">
                 {paginatedData.length === 0 && !isLoading ? (
                   <tr>
-                    <td colSpan={9} className="px-6 py-16 text-center text-neutral-500">
+                    <td colSpan={8} className="px-6 py-16 text-center text-neutral-500">
                       <div className="flex flex-col items-center">
                         <Filter className="w-8 h-8 text-neutral-300 mb-3" />
                         <p>Tidak ada data yang sesuai dengan filter.</p>
@@ -353,9 +348,9 @@ export function ResponsesClient({ initialResponses, institutions }: ResponsesCli
                       </td>
                       <td className="px-6 py-4 font-mono text-neutral-900 font-medium group-hover:text-neutral-600 transition-colors">{row.response_code.replace(/^ASM-/, "")}</td>
                       <td className="px-6 py-4 text-neutral-600">{row.date}</td>
-                      <td className="px-6 py-4 font-medium text-neutral-900 max-w-[250px] truncate" title={row.nama_penilai}>{row.nama_penilai}</td>
-                      <td className="px-6 py-4 font-medium text-neutral-900 max-w-[300px] truncate" title={row.inst}>{row.inst}</td>
                       <td className="px-6 py-4 text-neutral-500 max-w-[150px] truncate">{row.jabatan}</td>
+                      <td className="px-6 py-4 text-neutral-500 max-w-[150px] truncate">{row.kecamatan}</td>
+                      <td className="px-6 py-4 font-medium text-neutral-900 max-w-[300px] truncate" title={row.inst}>{row.inst}</td>
                       <td className="px-6 py-4 text-center">
                         <div className="inline-flex items-center justify-center px-2.5 py-1 bg-neutral-100 rounded-lg font-bold text-neutral-900">
                           {row.score.toFixed(2)}

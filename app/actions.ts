@@ -3,15 +3,10 @@
 import { createClient } from '@/lib/supabase/server'
 
 interface AssessmentPayload {
-  nama_penilai: string;
   jabatan: string;
-  provinsi: string;
-  kabupaten_kota: string;
   kecamatan: string;
   institution_id: string; // instansi yang dinilai
   answers: any;
-  obstacle: string;
-  suggestion: string;
 }
 
 // We will not use random string anymore, we will calculate based on count inside submitAssessment
@@ -37,15 +32,15 @@ export async function submitAssessment(payload: AssessmentPayload) {
     .insert({
       response_code: responseCode,
       institution_id: payload.institution_id,
-      nama_penilai: payload.nama_penilai,
       jabatan: payload.jabatan,
-      provinsi: payload.provinsi,
-      kabupaten_kota: payload.kabupaten_kota,
       kecamatan: payload.kecamatan,
       answers: payload.answers,
       overall_score: overall_score,
-      obstacle: payload.obstacle || null,
-      suggestion: payload.suggestion || null
+      nama_penilai: null,
+      provinsi: null,
+      kabupaten_kota: null,
+      obstacle: null,
+      suggestion: null
     } as any)
     .select()
     .single();

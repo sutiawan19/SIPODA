@@ -35,58 +35,55 @@ const DIMENSIONS = [
     id: "tangibles",
     title: "1 - TANGIBLES (Bukti Fisik)",
     questions: [
-      { id: "tangibles_1", text: "Fasilitas fisik seperti ruang pelayanan serta kenyamanan yang disediakan di tempat pelayanan sudah memadai." },
-      { id: "tangibles_2", text: "Peralatan serta teknologi seperti komputer, sistem antrean, dan website apakah sudah mendukung pelayanan yang baik." }
+      { id: "tangibles_1", text: "Seberapa baik pemanfaatan sarana dan prasarana pelayanan publik?" },
+      { id: "tangibles_2", text: "Seberapa baik pemanfaatan teknologi dalam proses pelayanan?" },
+      { id: "tangibles_3", text: "Seberapa baik pemanfaatan sumber daya manusia dalam meningkatkan kualitas pelayanan?" }
     ]
   },
   {
     id: "reliability",
     title: "2 - RELIABILITY (Keandalan)",
     questions: [
-      { id: "reliability_1", text: "Apakah pelayanan yang diberikan sudah sesuai dengan prosedur dan waktu yang sudah dijanjikan." },
-      { id: "reliability_2", text: "Apakah hasil pelayanan yang diterima sudah akurat dan tidak ada kesalahan." }
+      { id: "reliability_1", text: "Seberapa baik pembagian tugas serta kewenangan dalam organisasi?" },
+      { id: "reliability_2", text: "Seberapa baik prosedur pelayanan dalam mendukung kelancaran pelayanan?" },
+      { id: "reliability_3", text: "Seberapa baik ketepatan waktu dalam penyelesaian pelayanan?" }
     ]
   },
   {
     id: "responsiveness",
-    title: "3 - RESPONSIVENESS (Ketanggapan)",
+    title: "3 - RESPONSIVENESS (Daya Tanggap)",
     questions: [
-      { id: "responsiveness_1", text: "Apakah petugas sudah memberikan pelayanan dengan cepat serta tidak berbelit-belit." },
-      { id: "responsiveness_2", text: "Apakah petugas tanggap dalam membantu saya dalam menghadapi kendala." }
+      { id: "responsiveness_1", text: "Seberapa baik arahan pemimpin dalam mendukung pelayanan?" },
+      { id: "responsiveness_2", text: "Seberapa baik kerja sama antarbidang dalam menyelesaikan suatu masalah?" },
+      { id: "responsiveness_3", text: "Seberapa baik komunikasi antarunit kerja?" }
     ]
   },
   {
     id: "assurance",
     title: "4 - ASSURANCE (Jaminan)",
     questions: [
-      { id: "assurance_1", text: "Apakah petugas mempunyai kemampuan yang baik dalam memberikan pelayanan." },
-      { id: "assurance_2", text: "Apakah sikap petugas membuat anda merasa nyaman serta percaya dalam pelayanan." }
+      { id: "assurance_1", text: "Seberapa baik pengawasan terhadap pelaksanaan pelayanan?" },
+      { id: "assurance_2", text: "Seberapa baik kompetensi pegawai?" },
+      { id: "assurance_3", text: "Seberapa baik pengembangan dan pelatihan pegawai?" }
     ]
   },
   {
     id: "empathy",
     title: "5 - EMPATHY (Empati)",
     questions: [
-      { id: "empathy_1", text: "Apakah petugas sudah memberikan perhatian terhadap keluhan anda secara individu." },
-      { id: "empathy_2", text: "Apakah petugas bersikap ramah serta sopan selama pelayanan berlangsung." }
-    ]
-  },
-  {
-    id: "sdm",
-    title: "6 - SUMBER DAYA MANUSIA",
-    questions: [
-      { id: "sdm_1", text: "Apakah instansi sudah meningkatkan kualitas aparatur agar lebih responsif?" },
-      { id: "sdm_2", text: "Apakah beban kerja dan pembagian pegawai sesuai dengan jabatan?" }
-    ]
-  },
-  {
-    id: "koordinasi",
-    title: "7 - KOORDINASI ANTAR BIDANG",
-    questions: [
-      { id: "koordinasi_1", text: "Apakah sering terjadi tumpang tindih antar kewenangan?" },
-      { id: "koordinasi_2", text: "Seberapa sering rapat koordinasi antar bidang diadakan?" }
+      { id: "empathy_1", text: "Seberapa baik dukungan pemimpin dalam menyelesaikan kendala?" },
+      { id: "empathy_2", text: "Seberapa baik evaluasi yang dilakukan pemimpin?" },
+      { id: "empathy_3", text: "Seberapa baik jumlah pegawai yang tersedia?" }
     ]
   }
+];
+
+const LIKERT_OPTIONS = [
+  { value: 1, label: "Sangat Tidak Baik" },
+  { value: 2, label: "Tidak Baik" },
+  { value: 3, label: "Cukup" },
+  { value: 4, label: "Baik" },
+  { value: 5, label: "Sangat Baik" }
 ];
 
 const JABATAN_OPTIONS = [
@@ -125,18 +122,10 @@ export default function AssessmentClient({ institutions }: { institutions: any[]
   }, []);
 
   // Section 1 State
-  const [nama, setNama] = useState("");
   const [jabatan, setJabatan] = useState("");
   const [instansiDinilai, setInstansiDinilai] = useState("");
 
-  const [provinces, setProvinces] = useState<Region[]>([]);
-  const [regencies, setRegencies] = useState<Region[]>([]);
   const [districts, setDistricts] = useState<Region[]>([]);
-
-  const [selectedProv, setSelectedProv] = useState("");
-  const [selectedProvName, setSelectedProvName] = useState("");
-  const [selectedReg, setSelectedReg] = useState("");
-  const [selectedRegName, setSelectedRegName] = useState("");
   const [selectedDistName, setSelectedDistName] = useState("");
 
   // Section 2 State
@@ -144,38 +133,15 @@ export default function AssessmentClient({ institutions }: { institutions: any[]
   const [missingFields, setMissingFields] = useState<string[]>([]);
 
   useEffect(() => {
-    getProvinces().then(setProvinces);
+    getDistricts('3211').then(setDistricts);
   }, []);
 
-  useEffect(() => {
-    if (selectedProv) {
-      getRegencies(selectedProv).then(setRegencies);
-      setSelectedReg("");
-      setSelectedRegName("");
-      setDistricts([]);
-      setSelectedDistName("");
-    }
-  }, [selectedProv]);
-
-  useEffect(() => {
-    if (selectedReg) {
-      getDistricts(selectedReg).then(setDistricts);
-      setSelectedDistName("");
-    }
-  }, [selectedReg]);
-
   const findFirstIncompleteStep = () => {
-    if (!nama || !jabatan || !selectedProv || !selectedReg || !selectedDistName || !instansiDinilai) {
-      return 0;
-    }
-
+    if (!jabatan || !selectedDistName || !instansiDinilai) return 0;
     for (let i = 0; i < DIMENSIONS.length; i++) {
       const dim = DIMENSIONS[i];
-      for (const q of dim.questions) {
-        if (answers[q.id] === undefined) {
-          return i + 1; // Step 0 is User Info
-        }
-      }
+      const hasUnanswered = dim.questions.some(q => !answers[q.id]);
+      if (hasUnanswered) return i + 1;
     }
     return -1;
   };
@@ -186,33 +152,28 @@ export default function AssessmentClient({ institutions }: { institutions: any[]
   };
 
   const handleNext = () => {
-    let missingFieldId = "";
-    
     if (currentStep === 0) {
-      if (!nama) missingFieldId = "field-nama";
-      else if (!jabatan) missingFieldId = "field-jabatan";
-      else if (!selectedProv) missingFieldId = "field-provinsi";
-      else if (!selectedReg) missingFieldId = "field-kabupaten";
-      else if (!selectedDistName) missingFieldId = "field-kecamatan";
-      else if (!instansiDinilai) missingFieldId = "field-instansi";
+      const missing = [];
+      if (!jabatan) missing.push('field-jabatan');
+      if (!selectedDistName) missing.push('field-kecamatan');
+      if (!instansiDinilai) missing.push('field-instansi');
+      
+      if (missing.length > 0) {
+        setMissingFields(missing);
+        setErrorMessage("Pastikan Anda sudah mengisi Jabatan, Kecamatan, dan Instansi yang Dinilai sebelum melanjutkan.");
+        setShowErrorPopup(true);
+        return;
+      }
     } else {
-      const dim = DIMENSIONS[currentStep - 1];
-      for (const q of dim.questions) {
-        if (!answers[q.id]) {
-          missingFieldId = `field-${q.id}`;
-          break;
-        }
+      const currentDim = DIMENSIONS[currentStep - 1];
+      const missing = currentDim.questions.filter(q => !answers[q.id]).map(q => `field-${q.id}`);
+      
+      if (missing.length > 0) {
+        setMissingFields(missing);
+        setErrorMessage(`Anda belum menyelesaikan penilaian untuk dimensi ${currentDim.title}.`);
+        setShowErrorPopup(true);
+        return;
       }
-    }
-
-    if (missingFieldId) {
-      setMissingFields(prev => Array.from(new Set([...prev, missingFieldId])));
-      const el = document.getElementById(missingFieldId);
-      if (el) {
-        const y = el.getBoundingClientRect().top + window.scrollY - 150;
-        window.scrollTo({ top: y, behavior: 'smooth' });
-      }
-      return;
     }
 
     setMissingFields([]);
@@ -222,13 +183,12 @@ export default function AssessmentClient({ institutions }: { institutions: any[]
 
   const handleSubmit = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
-    if (Object.keys(answers).length < 14) {
-      setErrorMessage("Harap lengkapi seluruh penilaian (14 Pertanyaan) sebelum mengirim form.");
+    if (Object.keys(answers).length < 15) {
+      setErrorMessage("Harap lengkapi seluruh penilaian sebelum mengirim form.");
       setShowErrorPopup(true);
       return;
     }
 
-    // Show confirmation popup first
     setShowConfirmPopup(true);
   };
 
@@ -236,17 +196,13 @@ export default function AssessmentClient({ institutions }: { institutions: any[]
     setShowConfirmPopup(false);
     setIsSubmitting(true);
     try {
-      await submitAssessment({
-        nama_penilai: nama,
+      const payload = {
         jabatan,
-        provinsi: selectedProvName,
-        kabupaten_kota: selectedRegName,
         kecamatan: selectedDistName,
         institution_id: instansiDinilai,
-        answers,
-        obstacle: "",
-        suggestion: ""
-      });
+        answers
+      };
+      await submitAssessment(payload);
 
       const answerValues = Object.values(answers) as number[];
       const sum = answerValues.reduce((a, b) => a + b, 0);
@@ -333,13 +289,7 @@ export default function AssessmentClient({ institutions }: { institutions: any[]
                   <h2 className="text-xl md:text-2xl font-bold mb-8 pb-4 border-b border-neutral-100 text-neutral-900">Informasi Penilai</h2>
                   
                   <div className="space-y-6">
-                    <div id="field-nama">
-                      <label className="block text-sm font-semibold text-neutral-800 mb-2">Nama Lengkap <span className="text-red-500">*</span></label>
-                      <input required type="text" value={nama} onChange={e => { setNama(e.target.value); setMissingFields(m => m.filter(x => x !== 'field-nama')); }} className="w-full px-4 py-3 border border-neutral-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-neutral-900 focus:border-transparent text-base transition-all bg-neutral-50 focus:bg-white" placeholder="Masukkan nama lengkap" />
-                      {missingFields.includes('field-nama') && <span className="text-red-500 text-xs mt-1 block">Wajib diisi</span>}
-                    </div>
-
-                    <div className="z-50 relative" id="field-jabatan">
+                    <div className="z-50 relative mb-6" id="field-jabatan">
                       <label className="block text-sm font-semibold text-neutral-800 mb-2">Jabatan <span className="text-red-500">*</span></label>
                       {mounted && (
                         <Select 
@@ -355,61 +305,21 @@ export default function AssessmentClient({ institutions }: { institutions: any[]
                       {missingFields.includes('field-jabatan') && <span className="text-red-500 text-xs mt-1 block">Wajib dipilih</span>}
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-5 z-40 relative">
-                      <div className="z-40 relative" id="field-provinsi">
-                        <label className="block text-sm font-semibold text-neutral-800 mb-2">Provinsi <span className="text-red-500">*</span></label>
-                        {mounted && (
-                          <Select 
-                            instanceId="prov-select"
-                            options={provinces.map(p => ({ value: p.id, label: p.name }))}
-                            styles={customSelectStyles}
-                            placeholder="Pilih Provinsi"
-                            value={selectedProv ? { value: selectedProv, label: selectedProvName } : null}
-                            onChange={(selected: any) => {
-                              setSelectedProv(selected.value);
-                              setSelectedProvName(selected.label);
-                              setMissingFields(m => m.filter(x => x !== 'field-provinsi'));
-                            }}
-                            menuPortalTarget={document.body}
-                          />
-                        )}
-                        {missingFields.includes('field-provinsi') && <span className="text-red-500 text-xs mt-1 block">Wajib dipilih</span>}
-                      </div>
-                      <div id="field-kabupaten">
-                        <label className="block text-sm font-semibold text-neutral-800 mb-2">Kabupaten/Kota <span className="text-red-500">*</span></label>
-                        {mounted && (
-                          <Select 
-                            instanceId="kabupaten-select"
-                            isDisabled={!selectedProv}
-                            options={regencies.map(r => ({ value: r.id, label: r.name }))}
-                            styles={customSelectStyles}
-                            placeholder="Pilih Kabupaten"
-                            value={selectedReg ? { value: selectedReg, label: selectedRegName } : null}
-                            onChange={(selected: any) => {
-                              setSelectedReg(selected?.value || "");
-                              setSelectedRegName(selected?.label || "");
-                              setMissingFields(m => m.filter(x => x !== 'field-kabupaten'));
-                            }}
-                            noOptionsMessage={() => "Tidak ada data"}
-                            menuPortalTarget={document.body}
-                          />
-                        )}
-                        {missingFields.includes('field-kabupaten') && <span className="text-red-500 text-xs mt-1 block">Wajib dipilih</span>}
-                      </div>
+                    <div className="grid grid-cols-1 gap-5 z-40 relative">
                       <div id="field-kecamatan">
                         <label className="block text-sm font-semibold text-neutral-800 mb-2">Kecamatan <span className="text-red-500">*</span></label>
                         {mounted && (
                           <Select 
                             instanceId="kecamatan-select"
-                            isDisabled={!selectedReg}
                             options={districts.map(d => ({ value: d.name, label: d.name }))}
                             styles={customSelectStyles}
-                            placeholder="Pilih Kecamatan"
+                            placeholder="Ketik atau pilih Kecamatan..."
                             value={selectedDistName ? { value: selectedDistName, label: selectedDistName } : null}
                             onChange={(selected: any) => {
                               setSelectedDistName(selected?.value || "");
                               setMissingFields(m => m.filter(x => x !== 'field-kecamatan'));
                             }}
+                            isSearchable
                             noOptionsMessage={() => "Tidak ada data"}
                             menuPortalTarget={document.body}
                           />
@@ -464,7 +374,7 @@ export default function AssessmentClient({ institutions }: { institutions: any[]
                     <div className="mb-8 pb-4 border-b border-neutral-100">
                       <span className="inline-block px-3 py-1 bg-neutral-100 text-neutral-600 rounded-full text-xs font-bold tracking-wider uppercase mb-3">Dimensi Penilaian</span>
                       <h2 className="text-xl md:text-2xl font-bold text-neutral-900 tracking-tight">{dim.title}</h2>
-                      <p className="text-sm text-neutral-500 mt-2">Beri penilaian dengan skala 1 (Sangat Tidak Setuju) hingga 5 (Sangat Setuju).</p>
+                      <p className="text-sm text-neutral-500 mt-2">Beri penilaian dengan skala 1 (Sangat Tidak Baik) hingga 5 (Sangat Baik).</p>
                     </div>
                     
                     <div className="space-y-8">
