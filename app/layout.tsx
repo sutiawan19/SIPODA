@@ -7,11 +7,11 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   metadataBase: new URL('https://penilaianpelayanan.vercel.app'),
   title: {
-    default: "Penilaian Restrukturisasi Berbasis Kualitas Pelayanan Publik",
-    template: "%s | Pelayanan Publik"
+    template: "%s | SIPODA",
+    default: "SIPODA (Sistem Informasi Pengembangan Organisasi Digital Adaptif)",
   },
-  description: "Website Penilaian Restrukturisasi Berbasis Kualitas Pelayanan Publik untuk membantu Organisasi Perangkat Daerah (OPD) melakukan evaluasi organisasi berdasarkan indikator kualitas pelayanan publik secara objektif, cepat, dan terukur.",
-  keywords: ["Penilaian Restrukturisasi", "Kualitas Pelayanan Publik", "Evaluasi OPD", "Organisasi Perangkat Daerah", "SERVQUAL", "Evaluasi Pelayanan Publik", "Sistem Penilaian Organisasi Pemerintah"],
+  description: "Sistem Informasi Pengembangan Organisasi Digital Adaptif untuk membantu Organisasi Perangkat Daerah (OPD) melakukan evaluasi kemampuan adaptasi organisasi di era digital secara objektif, cepat, dan terukur.",
+  keywords: ["SIPODA", "Organisasi Digital Adaptif", "Sensing", "Seizing", "Transforming", "Evaluasi OPD", "Organisasi Perangkat Daerah", "Sistem Penilaian Organisasi Pemerintah"],
   authors: [{ name: "Admin" }],
   creator: "Admin",
   icons: {
@@ -22,22 +22,22 @@ export const metadata: Metadata = {
     type: "website",
     locale: "id_ID",
     url: "https://penilaianpelayanan.vercel.app",
-    title: "Penilaian Restrukturisasi Berbasis Kualitas Pelayanan Publik",
-    description: "Website Penilaian Restrukturisasi Berbasis Kualitas Pelayanan Publik untuk membantu Organisasi Perangkat Daerah (OPD) melakukan evaluasi organisasi berdasarkan indikator kualitas pelayanan publik secara objektif, cepat, dan terukur.",
-    siteName: "Penilaian Restrukturisasi",
+    title: "SIPODA (Sistem Informasi Pengembangan Organisasi Digital Adaptif)",
+    description: "Sistem Informasi Pengembangan Organisasi Digital Adaptif untuk membantu Organisasi Perangkat Daerah (OPD) melakukan evaluasi kemampuan adaptasi organisasi di era digital secara objektif, cepat, dan terukur.",
+    siteName: "SIPODA",
     images: [
       {
         url: "/logo.png",
         width: 800,
         height: 600,
-        alt: "Logo Penilaian Restrukturisasi",
+        alt: "Logo SIPODA",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Penilaian Restrukturisasi Berbasis Kualitas Pelayanan Publik",
-    description: "Website Penilaian Restrukturisasi Berbasis Kualitas Pelayanan Publik untuk membantu Organisasi Perangkat Daerah (OPD) melakukan evaluasi organisasi berdasarkan indikator kualitas pelayanan publik secara objektif, cepat, dan terukur.",
+    title: "SIPODA (Sistem Informasi Pengembangan Organisasi Digital Adaptif)",
+    description: "Sistem Informasi Pengembangan Organisasi Digital Adaptif untuk membantu Organisasi Perangkat Daerah (OPD) melakukan evaluasi kemampuan adaptasi organisasi di era digital secara objektif, cepat, dan terukur.",
     images: ["/logo.png"],
   },
   robots: {
@@ -67,8 +67,8 @@ export default function RootLayout({
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "WebApplication",
-              "name": "Penilaian Restrukturisasi Berbasis Kualitas Pelayanan Publik",
-              "description": "Website Penilaian Restrukturisasi Berbasis Kualitas Pelayanan Publik untuk membantu Organisasi Perangkat Daerah (OPD) melakukan evaluasi organisasi berdasarkan indikator kualitas pelayanan publik secara objektif, cepat, dan terukur.",
+              "name": "SIPODA (Sistem Informasi Pengembangan Organisasi Digital Adaptif)",
+              "description": "Sistem Informasi Pengembangan Organisasi Digital Adaptif untuk membantu Organisasi Perangkat Daerah (OPD) melakukan evaluasi kemampuan adaptasi organisasi di era digital secara objektif, cepat, dan terukur.",
               "applicationCategory": "GovernmentApplication",
               "operatingSystem": "All",
               "url": "https://penilaianpelayanan.vercel.app"

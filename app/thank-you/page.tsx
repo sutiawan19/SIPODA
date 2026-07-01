@@ -1,9 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { CheckCircle2, Info, Sparkles, Lightbulb } from "lucide-react";
+import { Download, Home, Sparkles, Trophy, CheckCircle2, Target, TrendingUp, AlertCircle, Eye, Zap, RefreshCcw } from "lucide-react";
 import { motion } from "framer-motion";
-import { Button } from "@/components/ui/Button";
 import confetti from "canvas-confetti";
 import { useEffect, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
@@ -11,53 +10,48 @@ import { useSearchParams, useRouter } from "next/navigation";
 function getScoreData(score: number) {
   if (score <= 20) {
     return {
-      status: "Sangat Tidak Baik",
-      recommendation: "Kondisi sangat jauh dari harapan dan hampir tidak mendukung pelayanan. Indikator tidak berjalan dengan baik, sering menimbulkan hambatan, keluhan, atau kegagalan dalam proses pelayanan.",
-      rekomendasi: "Menyusun ulang visi, misi serta tujuan yang berbasis kualitas pelayanan publik.",
-      textColor: "text-rose-600",
+      status: "Sangat Tidak Adaptif",
+      recommendation: "Organisasi belum memiliki kemampuan adaptif yang memadai. Diperlukan perubahan secara menyeluruh melalui penguatan kemampuan mengenali perubahan, pemanfaatan peluang, transformasi proses kerja, pengembangan kompetensi pegawai, serta penyesuaian struktur organisasi.",
+      textColor: "text-rose-500",
       bgSoft: "bg-rose-50",
-      borderSoft: "border-rose-100",
-      barColor: "bg-rose-500",
+      borderSoft: "border-rose-200",
+      Icon: AlertCircle
     };
   } else if (score <= 40) {
     return {
-      status: "Tidak Baik",
-      recommendation: "Kondisi masih kurang memadai dan belum mampu mendukung pelayanan secara optimal. Indikator sudah ada atau diterapkan, tetapi pelaksanaannya masih banyak kekurangan sehingga pelayanan sering terganggu.",
-      rekomendasi: "Lakukan survei kepuasan kepada masyarakat untuk dasar perbaikan pelayanan.",
-      textColor: "text-amber-600",
+      status: "Kurang Adaptif",
+      recommendation: "Organisasi belum mampu beradaptasi secara optimal. Diperlukan penguatan dalam pemantauan perubahan lingkungan, dukungan terhadap inovasi, peningkatan kolaborasi, dan penyempurnaan proses kerja.",
+      textColor: "text-amber-500",
       bgSoft: "bg-amber-50",
-      borderSoft: "border-amber-100",
-      barColor: "bg-amber-500",
+      borderSoft: "border-amber-200",
+      Icon: TrendingUp
     };
   } else if (score <= 60) {
     return {
-      status: "Cukup",
-      recommendation: "Kondisi cukup memadai dan mampu mendukung pelayanan pada tingkat dasar. Indikator telah berjalan sesuai standar minimum, namun masih terdapat beberapa kelemahan yang perlu diperbaiki.",
-      rekomendasi: "Menguatkan kualitas SDM melalui berbagai pelatihan berbasis kompetensi.",
-      textColor: "text-violet-600",
-      bgSoft: "bg-violet-50",
-      borderSoft: "border-violet-100",
-      barColor: "bg-violet-500",
+      status: "Cukup Adaptif",
+      recommendation: "Organisasi memiliki kemampuan adaptif yang cukup, tetapi belum konsisten pada seluruh aspek. Organisasi perlu meningkatkan kemampuan dalam mengenali perubahan, mempercepat pengambilan keputusan, dan memperbaiki proses kerja secara berkelanjutan.",
+      textColor: "text-[#1cb0f6]",
+      bgSoft: "bg-[#ddf4ff]",
+      borderSoft: "border-[#1cb0f6]",
+      Icon: Target
     };
   } else if (score <= 80) {
     return {
-      status: "Baik",
-      recommendation: "Kondisi sudah berjalan dengan baik dan mendukung pelayanan secara efektif. Indikator terlaksana secara konsisten, hanya terdapat sedikit kendala yang tidak terlalu memengaruhi kualitas pelayanan.",
-      rekomendasi: "Mengembangkan sistem serta inovasi pelayanan publik.",
-      textColor: "text-blue-600",
-      bgSoft: "bg-blue-50",
-      borderSoft: "border-blue-100",
-      barColor: "bg-blue-500",
+      status: "Adaptif",
+      recommendation: "Organisasi telah mampu beradaptasi terhadap perubahan, namun masih terdapat aspek yang perlu ditingkatkan agar kemampuan adaptif semakin optimal, terutama dalam memperkuat inovasi dan koordinasi organisasi.",
+      textColor: "text-indigo-500",
+      bgSoft: "bg-indigo-50",
+      borderSoft: "border-indigo-200",
+      Icon: CheckCircle2
     };
   } else {
     return {
-      status: "Sangat Baik",
-      recommendation: "Kondisi sangat optimal dan menjadi pendukung utama kualitas pelayanan. Indikator berjalan secara maksimal, efektif, efisien, dan mampu memberikan dampak positif yang signifikan terhadap pelayanan.",
-      rekomendasi: "Mempertahankan dan mengembangkan inovasi pelayanan publik berkelanjutan.",
-      textColor: "text-emerald-600",
+      status: "Sangat Adaptif",
+      recommendation: "Organisasi memiliki kemampuan yang sangat baik dalam mengenali perubahan, memanfaatkan peluang, dan melakukan transformasi secara berkelanjutan. Organisasi perlu mempertahankan kemampuan tersebut serta terus mengembangkan inovasi dan pembelajaran.",
+      textColor: "text-emerald-500",
       bgSoft: "bg-emerald-50",
-      borderSoft: "border-emerald-100",
-      barColor: "bg-emerald-500",
+      borderSoft: "border-emerald-200",
+      Icon: Trophy
     };
   }
 }
@@ -73,8 +67,6 @@ function parseDims(dimsString: string | null) {
 function ThankYouContent() {
   const searchParams = useSearchParams();
   const scoreParam = searchParams.get("score");
-  const highestDim = searchParams.get("highest");
-  const lowestDim = searchParams.get("lowest");
   const dimsString = searchParams.get("dims");
   const score = scoreParam ? parseFloat(scoreParam) : null;
   const data = score !== null ? getScoreData(score) : null;
@@ -90,7 +82,6 @@ function ThankYouContent() {
   useEffect(() => {
     if (score === null || isNaN(score)) return;
 
-    // Trigger confetti on page load
     const duration = 3 * 1000;
     const animationEnd = Date.now() + duration;
     const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
@@ -99,159 +90,179 @@ function ThankYouContent() {
 
     const interval: any = setInterval(function() {
       const timeLeft = animationEnd - Date.now();
-
-      if (timeLeft <= 0) {
-        return clearInterval(interval);
-      }
+      if (timeLeft <= 0) return clearInterval(interval);
 
       const particleCount = 50 * (timeLeft / duration);
-      confetti({
-        ...defaults,
-        particleCount,
-        origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 }
-      });
-      confetti({
-        ...defaults,
-        particleCount,
-        origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 }
-      });
+      confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } });
+      confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } });
     }, 250);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [score]);
+
+  const handlePrint = async () => {
+    try {
+      const element = document.getElementById("pdf-certificate");
+      if (!element) return;
+      
+      const { toPng } = await import("html-to-image");
+      const { jsPDF } = await import("jspdf");
+
+      // Set scale manually to ensure high resolution
+      const scale = 2;
+      const dataUrl = await toPng(element, { 
+        cacheBust: true, 
+        pixelRatio: scale, 
+        backgroundColor: '#f3f9fc' 
+      });
+
+      const pdf = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: 'a4'
+      });
+
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = pdf.internal.pageSize.getHeight();
+
+      // We want to scale it down a bit. Let's add a generous margin (e.g. 25mm on each side)
+      const marginX = 25; 
+      let drawWidth = pdfWidth - (marginX * 2);
+      let drawHeight = (element.offsetHeight * drawWidth) / element.offsetWidth;
+
+      // Ensure it fits vertically as well
+      const marginY = 25;
+      if (drawHeight > pdfHeight - (marginY * 2)) {
+         drawHeight = pdfHeight - (marginY * 2);
+         drawWidth = (element.offsetWidth * drawHeight) / element.offsetHeight;
+      }
+
+      // Calculate center coordinates
+      const x = (pdfWidth - drawWidth) / 2;
+      const y = (pdfHeight - drawHeight) / 2;
+
+      pdf.addImage(dataUrl, 'PNG', x, y, drawWidth, drawHeight);
+      pdf.save('Hasil_Penilaian_SIPODA.pdf');
+
+    } catch (err) {
+      console.error(err);
+      alert(`Gagal mengunduh PDF: ${err instanceof Error ? err.message : String(err)}`);
+    }
+  };
+
+  const StatusIcon = data?.Icon || Target;
 
   return (
-    <div className="min-h-screen bg-neutral-50 flex items-center justify-center p-6 font-sans overflow-hidden">
-      <motion.div 
-        initial={{ opacity: 0, scale: 0.95, y: 10 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="max-w-md w-full bg-white rounded-2xl shadow-sm border border-neutral-200 p-8 md:p-10 text-center relative overflow-hidden"
-      >
-        <div className={`absolute top-0 left-0 w-full h-1.5 ${data?.barColor}`}></div>
-        <div className="flex justify-center mb-6 mt-2">
-          <div className={`w-16 h-16 rounded-full flex items-center justify-center shadow-lg shadow-black/5 ${data?.barColor}`}>
-            <CheckCircle2 className="w-8 h-8 text-white" />
-          </div>
-        </div>
-        
-        <h1 className="text-3xl font-bold text-neutral-900 mb-4 tracking-tight">Terima Kasih!</h1>
-        <p className="text-neutral-500 mb-8 leading-relaxed text-sm">
-          Penilaian Anda telah berhasil dikirim. Masukan Anda akan sangat berguna untuk evaluasi dan peningkatan kualitas pelayanan publik.
-        </p>
+    <div className="min-h-screen bg-[#f3f9fc] flex flex-col font-sans selection:bg-[#1cb0f6] selection:text-white pb-20">
+      {/* HEADER */}
+      <header className="sticky top-0 bg-white/95 backdrop-blur-md w-full px-4 py-4 sm:py-6 flex items-center justify-center gap-4 z-50 border-b-2 border-neutral-100 shadow-sm">
+        <h1 className="text-xl md:text-2xl font-extrabold tracking-widest uppercase text-[#1cb0f6]">Hasil Penilaian</h1>
+      </header>
 
-        {score !== null && data !== null && (
-          <motion.div 
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            className="mb-8"
-          >
-            <div className="w-full text-left">
-              <div className="flex justify-between items-start mb-5">
-                <div>
-                  <span className="text-[11px] font-bold text-neutral-500 uppercase tracking-wider block mb-1">
-                    Skor Penilaian
-                  </span>
-                  <div className={`text-5xl font-black tracking-tighter ${data.textColor}`}>
-                    {score}%
-                  </div>
+      <main className="flex-grow flex items-start justify-center p-4 sm:p-8 pt-8 sm:pt-12 w-full">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="w-full max-w-2xl mx-auto flex flex-col gap-6"
+        >
+          {/* UNIFIED CERTIFICATE CARD */}
+          {data && score !== null && (
+            <div id="pdf-certificate" className="pt-24 px-4 pb-4 sm:px-8 sm:pb-8 -mx-4 sm:-mx-8 w-[calc(100%+2rem)] sm:w-[calc(100%+4rem)] bg-[#f3f9fc]">
+              <div className="bg-white border-2 border-neutral-200 rounded-[2rem] p-6 sm:p-12 shadow-sm relative w-full text-center">
+                
+                {/* Mascot Peeking from Top */}
+                <div className="absolute left-1/2 -translate-x-1/2 -top-20 z-10">
+                 <motion.img 
+                   animate={{ y: [0, -10, 0] }}
+                   transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }}
+                   src="/mascot_cheering.png" alt="Mascot" className="w-32 h-32 sm:w-40 sm:h-40 object-contain" 
+                 />
+              </div>
+
+              {/* Title */}
+              <h2 className="text-2xl sm:text-3xl font-extrabold text-neutral-900 mt-12 sm:mt-16 mb-2">Kerja Bagus!</h2>
+              <p className="text-neutral-500 font-bold mb-10">Berikut adalah sertifikat hasil evaluasi adaptasi organisasi Anda.</p>
+
+              {/* MAIN SCORE & BADGE (No Boxes) */}
+              <div className="flex flex-col items-center justify-center mb-10">
+                <div className={`text-8xl sm:text-9xl font-black mb-4 ${data.textColor} tracking-tighter drop-shadow-sm`}>
+                  {score}%
                 </div>
-                <div className={`px-3 py-1 rounded-full border ${data.bgSoft} ${data.borderSoft} flex items-center justify-center`}>
-                  <span className={`text-[10px] leading-none font-bold uppercase tracking-wide ${data.textColor} mt-[2px]`}>
-                    {data.status}
-                  </span>
+                <div className={`flex items-center justify-center gap-2 text-xl sm:text-2xl font-extrabold ${data.textColor} bg-white px-6 py-3 rounded-full border-2 ${data.borderSoft}`}>
+                  <StatusIcon className={`w-6 h-6 sm:w-7 sm:h-7 stroke-[3]`} />
+                  <span>{data.status}</span>
                 </div>
               </div>
 
-              <div className="mb-5">
-                <div className="h-1.5 w-full bg-neutral-100 rounded-full overflow-hidden">
-                  <div 
-                    className={`h-full ${data.barColor} transition-all duration-1000 ease-out`} 
-                    style={{ width: `${Math.max(0, score)}%` }}
-                  />
-                </div>
-                <div className="flex justify-between mt-1.5 text-[10px] font-bold text-neutral-400">
-                  <span>0%</span>
-                  <span>100%</span>
-                </div>
-              </div>
+              <hr className="border-t-2 border-neutral-100 my-8 w-3/4 mx-auto" />
 
+              {/* CLEAN DIMENSIONS LIST (Rows, not boxes) */}
               {dimsList.length > 0 && (
-                <div className="mb-6 space-y-3 border-t border-neutral-100 pt-5">
-                  <span className="text-[11px] font-bold text-neutral-500 uppercase tracking-wider block mb-3">
-                    Skor per Dimensi
-                  </span>
-                  {dimsList.map((dim, idx) => (
-                    <div key={idx} className="flex flex-col gap-1.5">
-                      <div className="flex justify-between items-center text-xs">
-                        <span className="font-semibold text-neutral-700">{dim.title}</span>
-                        <span className="font-bold text-neutral-900">{dim.pct}%</span>
+                <div className="flex flex-col gap-5 w-full text-left mb-10 px-0 sm:px-4">
+                  {dimsList.map((dim, idx) => {
+                    let DimIcon = Target;
+                    let iconColor = "text-[#1cb0f6]";
+                    
+                    if (dim.title.toLowerCase().includes("sensing") || idx === 0) {
+                      DimIcon = Eye;
+                    } else if (dim.title.toLowerCase().includes("seizing") || idx === 1) {
+                      DimIcon = Zap;
+                      iconColor = "text-indigo-500";
+                    } else {
+                      DimIcon = RefreshCcw;
+                      iconColor = "text-emerald-500";
+                    }
+
+                    return (
+                      <div key={idx} className="flex items-center justify-between py-2 group">
+                        <div className="flex items-center gap-4">
+                          <div className={`w-12 h-12 rounded-xl bg-neutral-50 flex items-center justify-center border-2 border-neutral-100 group-hover:bg-neutral-100 transition-colors ${iconColor}`}>
+                            <DimIcon className="w-6 h-6 stroke-[3]" />
+                          </div>
+                          <span className="font-extrabold text-neutral-700 text-sm sm:text-base uppercase tracking-widest">{dim.title}</span>
+                        </div>
+                        <div className="font-black text-2xl sm:text-3xl text-neutral-900">{dim.pct}%</div>
                       </div>
-                      <div className="h-1.5 w-full bg-neutral-100 rounded-full overflow-hidden">
-                        <div 
-                          className={`h-full ${data.barColor} opacity-80 transition-all duration-1000 ease-out`} 
-                          style={{ width: `${Math.max(0, dim.pct)}%` }}
-                        />
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               )}
 
-              <div className="relative mt-12 space-y-6">
-                
-                {/* Informasi Hasil Box */}
-                <div className="relative">
-                  <div className={`absolute -top-3 left-4 px-3 py-1 bg-white rounded-full border shadow-sm flex items-center gap-1.5 ${data.borderSoft} z-20`}>
-                    <Lightbulb className={`w-3.5 h-3.5 ${data.textColor}`} />
-                    <span className={`text-[10px] font-extrabold uppercase tracking-widest ${data.textColor}`}>
-                      Informasi Hasil
-                    </span>
-                  </div>
-                  
-                  <div className={`relative p-5 md:p-6 pt-7 rounded-2xl border shadow-sm ${data.borderSoft} ${data.bgSoft} bg-opacity-40 overflow-hidden`}>
-                    <p className="text-sm font-semibold text-neutral-800 leading-relaxed text-justify relative z-10">
-                      {data.recommendation}
-                    </p>
-                    
-                    <div className={`absolute -right-6 -bottom-6 opacity-[0.04] pointer-events-none ${data.textColor}`}>
-                      <CheckCircle2 className="w-36 h-36" />
-                    </div>
-                  </div>
-                </div>
+              <hr className="border-t-2 border-neutral-100 my-8 w-3/4 mx-auto" />
 
-                {/* Rekomendasi Box */}
-                <div className="relative">
-                  <div className={`absolute -top-3 left-4 px-3 py-1 bg-white rounded-full border shadow-sm flex items-center gap-1.5 ${data.borderSoft} z-20`}>
-                    <Sparkles className={`w-3.5 h-3.5 ${data.textColor}`} />
-                    <span className={`text-[10px] font-extrabold uppercase tracking-widest ${data.textColor}`}>
-                      Rekomendasi
-                    </span>
-                  </div>
-                  
-                  <div className={`relative p-5 md:p-6 pt-7 rounded-2xl border shadow-sm ${data.borderSoft} ${data.bgSoft} bg-opacity-40 overflow-hidden`}>
-                    <p className="text-sm font-semibold text-neutral-800 leading-relaxed text-justify relative z-10">
-                      {data.rekomendasi}
-                    </p>
-                    
-                    <div className={`absolute -right-6 -bottom-6 opacity-[0.04] pointer-events-none ${data.textColor}`}>
-                      <CheckCircle2 className="w-36 h-36" />
-                    </div>
-                  </div>
-                </div>
-
+              {/* RECOMMENDATION TEXT (Flowing naturally) */}
+              <div className="flex flex-col items-center text-center mt-6">
+                <Sparkles className={`w-8 h-8 ${data.textColor} mb-4`} />
+                <h3 className="text-lg font-extrabold text-neutral-400 uppercase tracking-widest mb-4">Rekomendasi Tindakan</h3>
+                <p className="text-neutral-700 leading-relaxed font-bold text-base sm:text-lg">
+                  {data.recommendation}
+                </p>
               </div>
-            </div>
-          </motion.div>
-        )}
 
-        <Link href="/">
-          <Button variant="outline" className="w-full py-6 text-sm font-semibold rounded-xl border-neutral-200 hover:bg-neutral-50 text-neutral-700">
-            Kembali ke Form Penilaian
-          </Button>
-        </Link>
-      </motion.div>
+            </div>
+            </div>
+          )}
+
+          {/* ACTION BUTTONS (Outside the card, at the bottom) */}
+          <div className="flex flex-col sm:flex-row gap-4 mt-4 w-full">
+            <button 
+              onClick={handlePrint} 
+              className="w-full flex-1 py-5 text-sm sm:text-base font-extrabold uppercase tracking-wide rounded-2xl flex items-center justify-center gap-3 transition-all bg-[#1cb0f6] hover:bg-[#1899d6] text-white border-b-4 border-b-[#1899d6] active:border-b-0 active:translate-y-1 shadow-sm"
+            >
+              <Download className="w-6 h-6 stroke-[3]" /> Simpan PDF
+            </button>
+            <Link href="/" className="w-full flex-1">
+              <button 
+                className="w-full py-5 text-sm sm:text-base font-extrabold uppercase tracking-wide rounded-2xl flex items-center justify-center gap-3 transition-all bg-white hover:bg-neutral-50 text-neutral-600 border-2 border-neutral-200 border-b-4 border-b-neutral-300 active:border-b-2 active:translate-y-[2px]"
+              >
+                <Home className="w-6 h-6 stroke-[3]" /> Beranda
+              </button>
+            </Link>
+          </div>
+
+        </motion.div>
+      </main>
     </div>
   );
 }
@@ -259,8 +270,8 @@ function ThankYouContent() {
 export default function ThankYouPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-neutral-50 flex items-center justify-center p-6 font-sans">
-        <div className="w-8 h-8 border-4 border-neutral-300 border-t-neutral-900 rounded-full animate-spin"></div>
+      <div className="min-h-screen bg-[#f3f9fc] flex items-center justify-center p-6 font-sans">
+        <div className="w-12 h-12 border-4 border-neutral-200 border-t-[#1cb0f6] rounded-full animate-spin"></div>
       </div>
     }>
       <ThankYouContent />

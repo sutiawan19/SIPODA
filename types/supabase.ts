@@ -69,12 +69,10 @@
           id: string
           created_at: string
           response_code: string
-          institution_id: string
-          nama_penilai: string
+          nama: string
+          instansi: string
           jabatan: string
-          provinsi: string
-          kabupaten_kota: string
-          kecamatan: string
+          email: string | null
           answers: Json
           overall_score: number
           obstacle: string | null
@@ -84,12 +82,10 @@
           id?: string
           created_at?: string
           response_code: string
-          institution_id: string
-          nama_penilai: string
+          nama: string
+          instansi: string
           jabatan: string
-          provinsi: string
-          kabupaten_kota: string
-          kecamatan: string
+          email?: string | null
           answers: Json
           overall_score: number
           obstacle?: string | null
@@ -99,12 +95,10 @@
           id?: string
           created_at?: string
           response_code?: string
-          institution_id?: string
-          nama_penilai?: string
+          nama?: string
+          instansi?: string
           jabatan?: string
-          provinsi?: string
-          kabupaten_kota?: string
-          kecamatan?: string
+          email?: string | null
           answers?: Json
           overall_score?: number
           obstacle?: string | null

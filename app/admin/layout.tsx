@@ -11,7 +11,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   }
 
   return (
-    <div className="min-h-screen bg-neutral-50 flex flex-col">
+    <div className="min-h-screen bg-[#f3f9fc] flex flex-col font-sans selection:bg-[#1cb0f6] selection:text-white">
       <AdminNavbar />
       <main className="flex-1 w-full max-w-[1400px] mx-auto">
         {children}

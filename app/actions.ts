@@ -3,9 +3,10 @@
 import { createClient } from '@/lib/supabase/server'
 
 interface AssessmentPayload {
+  nama: string;
+  instansi: string;
   jabatan: string;
-  kecamatan: string;
-  institution_id: string; // instansi yang dinilai
+  email?: string;
   answers: any;
 }
 
@@ -15,7 +16,7 @@ export async function submitAssessment(payload: AssessmentPayload) {
   const supabase = await createClient()
 
   // Calculate overall score from answers
-  // answers object has format: { "tangibles_1": 5, "tangibles_2": 4, ... }
+  // answers object has format: { "sensing_1": 5, "sensing_2": 4, ... }
   const answerValues = Object.values(payload.answers) as number[];
   const sum = answerValues.reduce((acc, val) => acc + val, 0);
   const overall_score = answerValues.length > 0 ? Number((sum / answerValues.length).toFixed(2)) : 0;
@@ -31,9 +32,10 @@ export async function submitAssessment(payload: AssessmentPayload) {
     .from('survey_responses')
     .insert({
       response_code: responseCode,
-      institution_id: payload.institution_id,
+      nama: payload.nama,
+      instansi: payload.instansi,
       jabatan: payload.jabatan,
-      kecamatan: payload.kecamatan,
+      email: payload.email || null,
       answers: payload.answers,
       overall_score: overall_score
     } as any)

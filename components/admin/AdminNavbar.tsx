@@ -28,13 +28,13 @@ export function AdminNavbar() {
   return (
     <>
       {/* Top Navbar */}
-      <header className="bg-white border-b border-neutral-200 sticky top-0 z-40">
+      <header className="bg-white border-b-2 border-neutral-100 sticky top-0 z-40">
         <div className="max-w-[1400px] mx-auto px-6 h-16 flex items-center justify-between">
           
           <div className="flex items-center gap-10 h-full">
             <Link href="/admin/dashboard" className="flex items-center gap-2">
-              <img src="/logo.png" alt="Logo" className="w-6 h-6 object-contain" />
-              <span className="font-semibold text-lg text-neutral-950 tracking-tight">
+              <img src="/logo.png" alt="Logo" className="w-8 h-8 object-contain drop-shadow-sm" />
+              <span className="font-extrabold text-xl text-neutral-900 tracking-tight">
                 AdminPanel
               </span>
             </Link>
@@ -47,10 +47,10 @@ export function AdminNavbar() {
                   <Link
                     key={link.name}
                     href={link.href}
-                    className={`flex items-center h-full text-sm font-medium transition-colors border-b-2 pt-[2px] ${
+                    className={`flex items-center h-full text-sm font-extrabold transition-colors border-b-2 pt-[2px] ${
                       isActive
-                        ? "border-neutral-900 text-neutral-900"
-                        : "border-transparent text-neutral-500 hover:text-neutral-900 hover:border-neutral-300"
+                        ? "border-[#1cb0f6] text-[#1cb0f6]"
+                        : "border-transparent text-neutral-500 hover:text-neutral-900 hover:border-neutral-200"
                     }`}
                   >
                     {link.name}
@@ -64,9 +64,9 @@ export function AdminNavbar() {
             {/* Logout */}
             <button
               onClick={handleLogout}
-              className="flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium text-neutral-500 hover:text-red-600 hover:bg-red-50 transition-colors"
+              className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-extrabold text-neutral-500 hover:text-rose-500 hover:bg-rose-50 transition-all active:scale-95"
             >
-              <LogOut className="w-4 h-4" />
+              <LogOut className="w-4 h-4 stroke-[3]" />
               <span className="hidden sm:inline">Keluar</span>
             </button>
           </div>

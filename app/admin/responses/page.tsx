@@ -14,6 +14,22 @@ export const metadata: Metadata = {
   },
 }
 
+function formatCustomDate(dateString: string) {
+  if (!dateString) return "-";
+  const d = new Date(dateString);
+  const days = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
+  const months = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+  
+  const dayName = days[d.getDay()];
+  const day = d.getDate().toString().padStart(2, "0");
+  const month = months[d.getMonth()];
+  const year = d.getFullYear();
+  const hours = d.getHours().toString().padStart(2, "0");
+  const minutes = d.getMinutes().toString().padStart(2, "0");
+  
+  return `${dayName}, ${day} ${month} ${year} pukul ${hours}.${minutes}`;
+}
+
 export default async function AdminResponsesPage() {
   const supabase = await createClient()
 
@@ -25,36 +41,26 @@ export default async function AdminResponsesPage() {
       created_at,
       response_code,
       overall_score,
+      nama,
+      instansi,
       jabatan,
-      kecamatan,
+      email,
       answers,
       obstacle,
-      suggestion,
-      institutions ( name )
+      suggestion
     `)
     .order('created_at', { ascending: false })
-
-  // Still fetch institutions for the filter dropdown
-  const { data: institutions } = await supabase
-    .from('institutions')
-    .select('id, name')
-    .eq('is_active', true)
-    .order('name')
 
   // Map to format that client expects or can easily render
   const formattedResponses = (responses || []).map((r: any) => ({
     id: r.id,
     response_code: r.response_code,
-    date: new Date(r.created_at).toLocaleDateString('id-ID', {
-      day: '2-digit', month: 'short', year: 'numeric'
-    }),
+    date: formatCustomDate(r.created_at),
     rawDate: r.created_at,
-    inst: r.institutions?.name || 'Unknown',
-    nama_penilai: r.nama_penilai,
+    nama: r.nama,
+    inst: r.instansi,
     jabatan: r.jabatan,
-    provinsi: r.provinsi,
-    kabupaten_kota: r.kabupaten_kota,
-    kecamatan: r.kecamatan,
+    email: r.email,
     score: r.overall_score || 0,
     answers: r.answers || {},
     kendala: r.obstacle,
@@ -64,7 +70,6 @@ export default async function AdminResponsesPage() {
   return (
     <ResponsesClient 
       initialResponses={formattedResponses}
-      institutions={institutions || []}
     />
   )
 }

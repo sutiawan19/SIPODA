@@ -2,9 +2,9 @@ import { MetadataRoute } from 'next'
  
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: 'Penilaian Restrukturisasi Berbasis Kualitas Pelayanan Publik',
-    short_name: 'Penilaian OPD',
-    description: 'Website Penilaian Restrukturisasi Berbasis Kualitas Pelayanan Publik untuk membantu Organisasi Perangkat Daerah (OPD) melakukan evaluasi organisasi berdasarkan indikator kualitas pelayanan publik secara objektif, cepat, dan terukur.',
+    name: 'SIPODA (Sistem Informasi Pengembangan Organisasi Digital Adaptif)',
+    short_name: 'SIPODA',
+    description: 'Sistem Informasi Pengembangan Organisasi Digital Adaptif untuk membantu Organisasi Perangkat Daerah (OPD) melakukan evaluasi organisasi.',
     start_url: '/',
     display: 'standalone',
     background_color: '#ffffff',

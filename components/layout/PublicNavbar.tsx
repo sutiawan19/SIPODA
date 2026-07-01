@@ -14,7 +14,7 @@ export default function PublicNavbar() {
         <Link href="/" className="flex items-center justify-center gap-2 group">
           <img src="/logo.png" alt="Logo" className="w-6 h-6 object-contain" />
           <span className="font-semibold text-neutral-950 text-base tracking-tight truncate max-w-xs sm:max-w-md md:max-w-lg lg:max-w-full">
-            Penilaian Restrukturisasi Berbasis Kualitas Pelayanan Publik
+            SIPODA (Sistem Informasi Pengembangan Organisasi Digital Adaptif)
           </span>
         </Link>
       </div>

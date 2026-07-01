@@ -6,12 +6,12 @@ TRUNCATE TABLE survey_responses CASCADE;
 
 -- 2. Tambahkan kolom baru ke tabel survey_responses
 ALTER TABLE survey_responses
-ADD COLUMN nama_penilai text NOT NULL,
+DROP COLUMN IF EXISTS institution_id,
+DROP COLUMN IF EXISTS kecamatan,
+ADD COLUMN nama text NOT NULL,
+ADD COLUMN instansi text NOT NULL,
+ADD COLUMN email text,
 ADD COLUMN jabatan text NOT NULL,
-ADD COLUMN provinsi text NOT NULL,
-ADD COLUMN kabupaten_kota text NOT NULL,
-ADD COLUMN kecamatan text NOT NULL,
-ADD COLUMN answers jsonb NOT NULL DEFAULT '{}'::jsonb;
 
 -- Catatan: 
 -- Tabel survey_answers dan survey_questions tidak lagi kita gunakan secara aktif

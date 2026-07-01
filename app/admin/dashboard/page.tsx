@@ -6,7 +6,7 @@ import { Metadata } from 'next'
 export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
-  title: 'Dashboard Admin | Penilaian Restrukturisasi Berbasis Kualitas Pelayanan Publik',
+  title: 'Dashboard Admin | SIPODA',
   description: 'Dashboard administrator.',
   robots: {
     index: false,
@@ -26,9 +26,10 @@ export default async function AdminDashboardPage() {
       response_code,
       overall_score,
       answers,
+      nama,
+      instansi,
       jabatan,
-      kecamatan,
-      institutions ( name )
+      email
     `)
     .order('created_at', { ascending: false })
 
@@ -38,10 +39,8 @@ export default async function AdminDashboardPage() {
 
   const allResponses = (responses as any[]) || []
   
-  const { count: totalInstitutions } = await supabase
-    .from('institutions')
-    .select('id', { count: 'exact', head: true })
-    .eq('is_active', true)
+  // Calculate total unique institutions from responses
+  const uniqueInstitutions = new Set(allResponses.map(r => r.instansi).filter(Boolean));
 
-  return <DashboardClient responses={allResponses} totalInstitutions={totalInstitutions || 0} />
+  return <DashboardClient responses={allResponses} totalInstitutions={uniqueInstitutions.size} />
 }

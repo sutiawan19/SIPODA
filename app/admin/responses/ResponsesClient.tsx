@@ -15,31 +15,38 @@ const FADE_UP = {
 };
 
 const QUESTION_MAPPING: Record<string, string> = {
-  tangibles_1: "Seberapa baik pemanfaatan sarana dan prasarana pelayanan publik?",
-  tangibles_2: "Seberapa baik pemanfaatan teknologi dalam proses pelayanan?",
-  tangibles_3: "Seberapa baik pemanfaatan sumber daya manusia dalam meningkatkan kualitas pelayanan?",
-  reliability_1: "Seberapa baik pembagian tugas serta kewenangan dalam organisasi?",
-  reliability_2: "Seberapa baik prosedur pelayanan dalam mendukung kelancaran pelayanan?",
-  reliability_3: "Seberapa baik ketepatan waktu dalam penyelesaian pelayanan?",
-  responsiveness_1: "Seberapa baik arahan pemimpin dalam mendukung pelayanan?",
-  responsiveness_2: "Seberapa baik kerja sama antarbidang dalam menyelesaikan suatu masalah?",
-  responsiveness_3: "Seberapa baik komunikasi antarunit kerja?",
-  assurance_1: "Seberapa baik pengawasan terhadap pelaksanaan pelayanan?",
-  assurance_2: "Seberapa baik kompetensi pegawai?",
-  assurance_3: "Seberapa baik pengembangan dan pelatihan pegawai?",
-  empathy_1: "Seberapa baik dukungan pemimpin dalam menyelesaikan kendala?",
-  empathy_2: "Seberapa baik evaluasi yang dilakukan pemimpin?",
-  empathy_3: "Seberapa baik jumlah pegawai yang tersedia?"
+  sensing_1: "Organisasi secara rutin memantau perubahan kebutuhan masyarakat terhadap pelayanan",
+  sensing_2: "Organisasi secara aktif memantau perkembangan teknologi digital yang relevan dengan pelaksanaan tugas organisasi",
+  sensing_3: "Organisasi mampu mengidentifikasi perubahan kebijakan atau regulasi yang memengaruhi pelaksanaan tugas",
+  sensing_4: "Data hasil evaluasi pelayanan dimanfaatkan untuk mengidentifikasi kebutuhan perbaikan",
+  sensing_5: "Masukan dari masyarakat digunakan untuk mengenali kebutuhan peningkatan kualitas pelayanan",
+  sensing_6: "Organisasi secara aktif mengidentifikasi peluang inovasi melalui perkembangan teknologi dan informasi",
+  sensing_7: "Pimpinan mendorong pemanfaatan data dan informasi sebagai dasar memahami perubahan lingkungan strategis",
+  sensing_8: "Organisasi memiliki mekanisme yang efektif untuk mendeteksi permasalahan pelayanan sejak dini",
+  seizing_1: "Organisasi mampu menerapkan teknologi digital untuk meningkatkan kualitas pelayanan",
+  seizing_2: "Ide atau gagasan baru dari pegawai memperoleh dukungan untuk diimplementasikan",
+  seizing_3: "Organisasi mampu mengambil keputusan secara cepat ketika terdapat peluang untuk meningkatkan kinerja pelayanan",
+  seizing_4: "Organisasi menyediakan sumber daya yang diperlukan untuk mendukung penerapan inovasi digital",
+  seizing_5: "Teknologi baru dimanfaatkan untuk meningkatkan efisiensi pelaksanaan pekerjaan",
+  seizing_6: "Organisasi mendorong setiap unit kerja untuk mengembangkan inovasi dalam pelaksanaan tugas",
+  seizing_7: "Perubahan kebutuhan masyarakat segera direspons melalui penyesuaian layanan yang diberikan",
+  seizing_8: "Keputusan strategis didasarkan pada data dan informasi yang akurat",
+  transforming_1: "Organisasi mampu menyesuaikan prosedur kerja ketika terjadi perubahan kebutuhan pelayanan",
+  transforming_2: "Struktur kerja dapat disesuaikan untuk mendukung pelaksanaan tugas secara lebih efektif",
+  transforming_3: "Mekanisme koordinasi antarunit kerja dapat disesuaikan ketika menghadapi perubahan kebutuhan organisasi",
+  transforming_4: "Hasil evaluasi digunakan sebagai dasar untuk memperbaiki proses kerja organisasi",
+  transforming_5: "Perubahan teknologi diikuti dengan penyesuaian cara kerja organisasi",
+  transforming_6: "Organisasi mendorong budaya kerja yang terbuka terhadap perubahan dan inovasi",
+  transforming_7: "Pegawai diberikan kesempatan untuk berpartisipasi dalam proses perubahan dan pengembangan organisasi",
+  transforming_8: "Organisasi mampu mempertahankan kualitas pelayanan melalui penyesuaian struktur, proses kerja, dan pemanfaatan teknologi ketika menghadapi perubahan lingkungan."
 };
 
 interface ResponsesClientProps {
   initialResponses: any[];
-  institutions: any[];
 }
 
-export function ResponsesClient({ initialResponses, institutions }: ResponsesClientProps) {
+export function ResponsesClient({ initialResponses }: ResponsesClientProps) {
   const [search, setSearch] = useState("");
-  const [instFilter, setInstFilter] = useState("Semua Instansi");
   const [dateFilter, setDateFilter] = useState("Semua Waktu");
 
   const [isLoading, setIsLoading] = useState(false);
@@ -83,13 +90,38 @@ export function ResponsesClient({ initialResponses, institutions }: ResponsesCli
 
   const handleExport = () => {
     const worksheetData = filteredData.map(row => {
+      const score100 = (row.score / 5) * 100;
+      
+      let status = "Sangat Tidak Adaptif";
+      if (score100 > 20 && score100 <= 40) status = "Kurang Adaptif";
+      else if (score100 > 40 && score100 <= 60) status = "Cukup Adaptif";
+      else if (score100 > 60 && score100 <= 80) status = "Adaptif";
+      else if (score100 > 80) status = "Sangat Adaptif";
+
+      let sensingTotal = 0, sensingCount = 0;
+      let seizingTotal = 0, seizingCount = 0;
+      let transformingTotal = 0, transformingCount = 0;
+
+      Object.keys(row.answers || {}).forEach(k => {
+        if (k.startsWith('sensing_')) { sensingTotal += row.answers[k]; sensingCount++; }
+        if (k.startsWith('seizing_')) { seizingTotal += row.answers[k]; seizingCount++; }
+        if (k.startsWith('transforming_')) { transformingTotal += row.answers[k]; transformingCount++; }
+      });
+
+      const getDimPct = (total: number, count: number) => count > 0 ? ((total / count) / 5 * 100).toFixed(1) + "%" : "0.0%";
+
       const exportRow: any = {
         "ID Penilaian": row.response_code.replace(/^ASM-/, ""),
-        "Tanggal": row.date,
+        "Waktu Pengisian": row.date,
+        "Nama": row.nama,
+        "Instansi": row.inst,
         "Jabatan": row.jabatan,
-        "Kecamatan": row.kecamatan,
-        "Instansi yang Dinilai": row.inst,
-        "Skor Rata-rata": row.score
+        "Email": row.email || "-",
+        "Skor Keseluruhan (%)": score100.toFixed(1) + "%",
+        "Kategori": status,
+        "Skor Sensing (%)": getDimPct(sensingTotal, sensingCount),
+        "Skor Seizing (%)": getDimPct(seizingTotal, seizingCount),
+        "Skor Transforming (%)": getDimPct(transformingTotal, transformingCount)
       };
 
       // Append SERVQUAL answers
@@ -106,11 +138,16 @@ export function ResponsesClient({ initialResponses, institutions }: ResponsesCli
     // 1. Set column widths
     const wscols = [
       { wch: 15 }, // ID Penilaian
-      { wch: 15 }, // Tanggal
-      { wch: 20 }, // Jabatan
-      { wch: 20 }, // Kecamatan
+      { wch: 35 }, // Waktu Pengisian
+      { wch: 20 }, // Nama
       { wch: 30 }, // Instansi
-      { wch: 15 }  // Skor Rata-rata
+      { wch: 20 }, // Jabatan
+      { wch: 25 }, // Email
+      { wch: 22 }, // Skor Keseluruhan (%)
+      { wch: 22 }, // Kategori
+      { wch: 20 }, // Skor Sensing (%)
+      { wch: 20 }, // Skor Seizing (%)
+      { wch: 25 }  // Skor Transforming (%)
     ];
     // Add widths for the question columns
     for (let i = 0; i < Object.keys(QUESTION_MAPPING).length; i++) {
@@ -129,7 +166,7 @@ export function ResponsesClient({ initialResponses, institutions }: ResponsesCli
           // Header styling
           worksheet[cellAddress].s = {
             font: { bold: true, color: { rgb: "FFFFFF" } },
-            fill: { fgColor: { rgb: "171717" } }, // Dark neutral background
+            fill: { fgColor: { rgb: "1CB0F6" } }, // SIPODA Blue background
             alignment: { horizontal: "center", vertical: "center", wrapText: true },
             border: {
               top: { style: "thin", color: { rgb: "CCCCCC" } },
@@ -141,8 +178,8 @@ export function ResponsesClient({ initialResponses, institutions }: ResponsesCli
         } else {
           // Data row styling
           let hAlign = "left";
-          if (C > 4) {
-            hAlign = "center"; // Skor Rata-rata and Questions
+          if (C > 5) {
+            hAlign = "center"; // Scores and Questions
           }
 
           worksheet[cellAddress].s = {
@@ -161,14 +198,13 @@ export function ResponsesClient({ initialResponses, institutions }: ResponsesCli
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "Data Penilaian");
 
-    XLSX.writeFile(workbook, `Data_Penilaian_Restrukturisasi_${new Date().toISOString().split('T')[0]}.xlsx`);
+    XLSX.writeFile(workbook, `Data_Penilaian_SIPODA_${new Date().toISOString().split('T')[0]}.xlsx`);
   };
 
   const handleReset = () => {
     setIsLoading(true);
     setTimeout(() => {
       setSearch("");
-      setInstFilter("Semua Instansi");
       setDateFilter("Semua Waktu");
       setCurrentPage(1);
       setIsLoading(false);
@@ -177,21 +213,21 @@ export function ResponsesClient({ initialResponses, institutions }: ResponsesCli
 
   const filteredData = useMemo(() => {
     return initialResponses.filter((item) => {
-      const matchSearch = item.inst.toLowerCase().includes(search.toLowerCase()) ||
-        item.response_code.toLowerCase().includes(search.toLowerCase()) ||
-        item.nama_penilai.toLowerCase().includes(search.toLowerCase());
-      const matchInst = instFilter === "Semua Instansi" || item.inst === instFilter;
+      const searchStr = search.toLowerCase();
+      const matchSearch = item.inst?.toLowerCase().includes(searchStr) ||
+        item.nama?.toLowerCase().includes(searchStr) ||
+        item.response_code?.toLowerCase().includes(searchStr);
       const matchDate = dateFilter === "Semua Waktu" || true;
 
-      return matchSearch && matchInst && matchDate;
+      return matchSearch && matchDate;
     });
-  }, [initialResponses, search, instFilter, dateFilter]);
+  }, [initialResponses, search, dateFilter]);
 
   const totalPages = Math.ceil(filteredData.length / itemsPerPage);
   const paginatedData = filteredData.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   return (
-    <div className="min-h-screen bg-white font-sans text-neutral-900 pb-20">
+    <div className="min-h-screen bg-transparent font-sans text-neutral-900 pb-20">
 
       {/* Header Section */}
       <div className="pt-12 pb-6 px-6 md:px-12 max-w-[1400px] mx-auto border-b border-neutral-100 mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
@@ -205,16 +241,16 @@ export function ResponsesClient({ initialResponses, institutions }: ResponsesCli
           <button
             onClick={handleDeleteSelected}
             disabled={isDeleting || selectedIds.length === 0}
-            className={`inline-flex items-center justify-center gap-2 px-5 py-2.5 text-sm font-medium rounded-full transition-all shadow-sm ${selectedIds.length > 0
-                ? "bg-red-50 text-red-600 hover:bg-red-100 cursor-pointer"
-                : "bg-neutral-100 text-neutral-400 cursor-not-allowed"
+            className={`inline-flex items-center justify-center gap-2 px-5 py-3 text-sm font-extrabold rounded-2xl transition-all shadow-sm ${selectedIds.length > 0
+                ? "bg-rose-50 text-rose-600 hover:bg-rose-100 active:scale-95 cursor-pointer border-2 border-rose-200"
+                : "bg-neutral-100 text-neutral-400 cursor-not-allowed border-2 border-transparent"
               }`}
           >
-            {isDeleting ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Trash2 className="w-4 h-4 mr-2" />}
+            {isDeleting ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Trash2 className="w-4 h-4 mr-2 stroke-[3]" />}
             Hapus {selectedIds.length > 0 ? `${selectedIds.length} Terpilih` : "Terpilih"}
           </button>
-          <button onClick={handleExport} className="inline-flex items-center justify-center gap-2 px-5 py-2.5 text-sm font-medium bg-neutral-900 text-white rounded-full hover:bg-black transition-all shadow-sm">
-            <Download className="w-4 h-4 mr-2" />
+          <button onClick={handleExport} className="inline-flex items-center justify-center gap-2 px-6 py-3 text-sm font-extrabold bg-[#1cb0f6] text-white rounded-2xl hover:bg-[#1899d6] transition-all shadow-[0_4px_0_0_#1584b8] hover:translate-y-[2px] hover:shadow-[0_2px_0_0_#1584b8] active:translate-y-[4px] active:shadow-none">
+            <Download className="w-4 h-4 mr-2 stroke-[3]" />
             Export Excel
           </button>
         </div>
@@ -232,11 +268,11 @@ export function ResponsesClient({ initialResponses, institutions }: ResponsesCli
         >
           {/* Advanced Toolbar (Minimalist) */}
           <div className="flex flex-col xl:flex-row items-start xl:items-center gap-6 justify-between">
-            <div className="flex items-center gap-3 text-neutral-900">
-              <div className="w-10 h-10 rounded-full bg-neutral-100 flex items-center justify-center">
-                <Filter className="w-4 h-4 text-neutral-700" />
+            <div className="flex items-center gap-4 text-neutral-900">
+              <div className="w-12 h-12 rounded-[1rem] bg-[#1cb0f6]/10 flex items-center justify-center border-2 border-[#1cb0f6]/20">
+                <Filter className="w-5 h-5 text-[#1cb0f6] stroke-[3]" />
               </div>
-              <span className="font-semibold text-lg tracking-tight">Saring Data</span>
+              <span className="font-extrabold text-xl tracking-tight">Saring Data</span>
             </div>
 
             <div className="flex flex-wrap xl:flex-nowrap items-center gap-3 w-full xl:w-auto">
@@ -251,23 +287,11 @@ export function ResponsesClient({ initialResponses, institutions }: ResponsesCli
                   placeholder="Cari ID, Nama..."
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  className="block w-full pl-10 pr-3 py-2.5 border border-neutral-200 rounded-xl text-sm bg-neutral-50 focus:bg-white placeholder-neutral-400 focus:outline-none focus:ring-1 focus:ring-neutral-900 transition-all"
+                  className="block w-full pl-10 pr-3 py-3 border-2 border-neutral-200 rounded-2xl text-sm bg-white focus:outline-none focus:border-[#1cb0f6] focus:ring-4 focus:ring-[#1cb0f6]/20 transition-all font-bold text-neutral-900"
                 />
               </div>
 
               <div className="flex flex-wrap md:flex-nowrap gap-3 relative z-30">
-                {/* Institution Filter */}
-                <div className="w-full sm:w-56 z-20">
-                  <Select
-                    value={instFilter}
-                    onChange={setInstFilter}
-                    options={[
-                      { label: "Semua Instansi Dinilai", value: "Semua Instansi" },
-                      ...institutions.map(inst => ({ label: inst.name, value: inst.name }))
-                    ]}
-                  />
-                </div>
-
                 {/* Date Filter */}
                 <div className="w-full md:w-48">
                   <Select
@@ -293,17 +317,17 @@ export function ResponsesClient({ initialResponses, institutions }: ResponsesCli
           </div>
 
           {/* Table */}
-          <div className="overflow-x-auto border border-neutral-200 rounded-3xl p-1 relative min-h-[400px]">
+          <div className="overflow-x-auto border-2 border-neutral-200 rounded-2xl relative min-h-[400px] bg-white shadow-sm overflow-hidden">
             {isLoading && (
-              <div className="absolute inset-0 bg-white/80 backdrop-blur-sm z-10 flex items-center justify-center rounded-3xl">
+              <div className="absolute inset-0 bg-white/80 backdrop-blur-sm z-10 flex items-center justify-center">
                 <Loader2 className="w-6 h-6 animate-spin text-neutral-900" />
               </div>
             )}
 
             <table className="w-full text-left text-sm whitespace-nowrap">
-              <thead className="bg-neutral-50 text-neutral-500 text-xs uppercase tracking-wider relative z-0">
+              <thead className="bg-[#f3f9fc] text-neutral-600 text-xs uppercase tracking-widest font-extrabold relative z-0">
                 <tr>
-                  <th className="py-4 px-6 font-medium rounded-tl-2xl w-10">
+                  <th className="py-4 px-6 w-10">
                     <input
                       type="checkbox"
                       className="rounded-sm border-neutral-300 w-4 h-4 cursor-pointer"
@@ -311,13 +335,12 @@ export function ResponsesClient({ initialResponses, institutions }: ResponsesCli
                       onChange={handleSelectAll}
                     />
                   </th>
-                  <th className="py-4 px-6 font-medium w-24">ID Penilaian</th>
-                  <th className="py-4 px-6 font-medium">Tanggal</th>
-                  <th className="py-4 px-6 font-medium">Jabatan</th>
-                  <th className="py-4 px-6 font-medium">Kecamatan</th>
-                  <th className="py-4 px-6 font-medium">Instansi Dinilai</th>
-                  <th className="py-4 px-6 font-medium w-20 text-center">Skor</th>
-                  <th className="py-4 px-6 font-medium rounded-tr-2xl text-right">Aksi</th>
+                  <th className="py-4 px-6 w-24">ID Penilaian</th>
+                  <th className="py-4 px-6">Waktu Pengisian</th>
+                  <th className="py-4 px-6">Nama</th>
+                  <th className="py-4 px-6">Instansi</th>
+                  <th className="py-4 px-6 w-20 text-center">Skor</th>
+                  <th className="py-4 px-6 text-right">Aksi</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-neutral-100">
@@ -335,7 +358,7 @@ export function ResponsesClient({ initialResponses, institutions }: ResponsesCli
                     <tr
                       key={row.id}
                       onClick={() => setSelectedResponse(row)}
-                      className="hover:bg-neutral-50 transition-colors cursor-pointer group"
+                      className="hover:bg-[#f3f9fc]/50 transition-colors cursor-pointer group"
                     >
                       <td className="px-6 py-4" onClick={(e) => e.stopPropagation()}>
                         <input
@@ -347,17 +370,16 @@ export function ResponsesClient({ initialResponses, institutions }: ResponsesCli
                       </td>
                       <td className="px-6 py-4 font-mono text-neutral-900 font-medium group-hover:text-neutral-700 transition-colors">{row.response_code.replace(/^ASM-/, "")}</td>
                       <td className="px-6 py-4 text-neutral-700">{row.date}</td>
-                      <td className="px-6 py-4 text-neutral-500 max-w-[150px] truncate">{row.jabatan}</td>
-                      <td className="px-6 py-4 text-neutral-500 max-w-[150px] truncate">{row.kecamatan}</td>
-                      <td className="px-6 py-4 font-medium text-neutral-900 max-w-[300px] truncate" title={row.inst}>{row.inst}</td>
+                      <td className="px-6 py-4 text-neutral-500 max-w-[150px] truncate">{row.nama}</td>
+                      <td className="px-6 py-4 text-neutral-500 max-w-[200px] truncate">{row.inst}</td>
                       <td className="px-6 py-4 text-center">
                         <div className="inline-flex items-center justify-center px-2.5 py-1 bg-neutral-100 rounded-lg font-bold text-neutral-900">
-                          {row.score.toFixed(2)}
+                          {((row.score / 5) * 100).toFixed(1)}%
                         </div>
                       </td>
                       <td className="px-6 py-4 text-right">
                         <button
-                          className="inline-flex items-center justify-center px-3 py-1.5 text-sm font-medium bg-neutral-100 text-neutral-700 rounded-lg hover:bg-neutral-200 transition-colors"
+                          className="inline-flex items-center justify-center px-4 py-2 text-sm font-bold bg-[#f3f9fc] text-[#1cb0f6] rounded-xl hover:bg-[#e1f1fa] active:scale-95 transition-all"
                           onClick={(e) => {
                             e.stopPropagation();
                             setSelectedResponse(row);
@@ -400,14 +422,14 @@ export function ResponsesClient({ initialResponses, institutions }: ResponsesCli
             </div>
             <div className="flex gap-2">
               <button
-                className="inline-flex items-center justify-center w-10 h-10 border border-neutral-200 text-neutral-500 bg-white rounded-full hover:bg-neutral-50 hover:text-neutral-900 disabled:opacity-50 disabled:pointer-events-none transition-all shadow-sm"
+                className="inline-flex items-center justify-center w-12 h-12 border-2 border-neutral-200 text-neutral-500 bg-white rounded-2xl hover:bg-neutral-50 hover:text-neutral-900 hover:border-neutral-300 disabled:opacity-50 disabled:pointer-events-none transition-all shadow-sm active:scale-95"
                 disabled={currentPage === 1}
                 onClick={() => setCurrentPage(p => p - 1)}
               >
                 <ChevronLeft className="w-4 h-4" />
               </button>
               <button
-                className="inline-flex items-center justify-center w-10 h-10 border border-neutral-200 text-neutral-500 bg-white rounded-full hover:bg-neutral-50 hover:text-neutral-900 disabled:opacity-50 disabled:pointer-events-none transition-all shadow-sm"
+                className="inline-flex items-center justify-center w-12 h-12 border-2 border-neutral-200 text-neutral-500 bg-white rounded-2xl hover:bg-neutral-50 hover:text-neutral-900 hover:border-neutral-300 disabled:opacity-50 disabled:pointer-events-none transition-all shadow-sm active:scale-95"
                 disabled={currentPage === totalPages || totalPages === 0}
                 onClick={() => setCurrentPage(p => p + 1)}
               >
