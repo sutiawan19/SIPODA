@@ -5,7 +5,7 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://penilaianpelayanan.vercel.app'),
+  metadataBase: new URL('https://sipoda.vercel.app'),
   title: {
     template: "%s | SIPODA",
     default: "SIPODA (Sistem Informasi Pengembangan Organisasi Digital Adaptif)",
@@ -21,13 +21,13 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "id_ID",
-    url: "https://penilaianpelayanan.vercel.app",
+    url: "https://sipoda.vercel.app",
     title: "SIPODA (Sistem Informasi Pengembangan Organisasi Digital Adaptif)",
     description: "Sistem Informasi Pengembangan Organisasi Digital Adaptif untuk membantu Organisasi Perangkat Daerah (OPD) melakukan evaluasi kemampuan adaptasi organisasi di era digital secara objektif, cepat, dan terukur.",
     siteName: "SIPODA",
     images: [
       {
-        url: "/logo.png",
+        url: "/logo-sipoda.png",
         width: 800,
         height: 600,
         alt: "Logo SIPODA",
@@ -38,7 +38,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "SIPODA (Sistem Informasi Pengembangan Organisasi Digital Adaptif)",
     description: "Sistem Informasi Pengembangan Organisasi Digital Adaptif untuk membantu Organisasi Perangkat Daerah (OPD) melakukan evaluasi kemampuan adaptasi organisasi di era digital secara objektif, cepat, dan terukur.",
-    images: ["/logo.png"],
+    images: ["/logo-sipoda.png"],
   },
   robots: {
     index: true,

@@ -12,7 +12,7 @@ export default function PublicNavbar() {
       <div className="max-w-5xl mx-auto px-6 h-16 flex items-center justify-center">
         {/* Logo */}
         <Link href="/" className="flex items-center justify-center gap-2 group">
-          <img src="/logo.png" alt="Logo" className="w-6 h-6 object-contain" />
+          <img src="/logo-sipoda.png" alt="Logo" className="w-6 h-6 object-contain" />
           <span className="font-semibold text-neutral-950 text-base tracking-tight truncate max-w-xs sm:max-w-md md:max-w-lg lg:max-w-full">
             SIPODA (Sistem Informasi Pengembangan Organisasi Digital Adaptif)
           </span>

@@ -248,7 +248,7 @@ export default function AssessmentClient() {
               className="w-full mt-8 sm:mt-12"
             >
               <div className="flex flex-col items-center justify-center mb-24 sm:mb-28 gap-4">
-                <img src="/logo.png" alt="Logo SIPODA" className="h-16 sm:h-20 object-contain drop-shadow-sm" />
+                <img src="/logo-sipoda.png" alt="Logo SIPODA" className="h-16 sm:h-20 object-contain drop-shadow-sm" />
                 <h1 className="text-xl sm:text-2xl font-extrabold text-neutral-900 text-center tracking-tight leading-snug">
                   (Sistem Informasi Pengembangan Organisasi Digital Adaptif)
                 </h1>

@@ -5,7 +5,7 @@ export default function Loading() {
     <div className="min-h-screen flex flex-col bg-neutral-50 font-sans text-neutral-900 relative overflow-hidden">
       {/* Background Ornament */}
       <div className="absolute inset-0 z-0 pointer-events-none flex items-center justify-center opacity-[0.02]">
-        <img src="/logo.png" alt="" className="w-[120%] max-w-[800px] object-contain blur-[1px]" />
+        <img src="/logo-sipoda.png" alt="" className="w-[120%] max-w-[800px] object-contain blur-[1px]" />
       </div>
       
       <div className="relative z-10 flex flex-col flex-grow">

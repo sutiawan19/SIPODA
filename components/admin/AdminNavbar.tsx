@@ -33,7 +33,7 @@ export function AdminNavbar() {
           
           <div className="flex items-center gap-10 h-full">
             <Link href="/admin/dashboard" className="flex items-center gap-2">
-              <img src="/logo.png" alt="Logo" className="w-8 h-8 object-contain drop-shadow-sm" />
+              <img src="/logo-sipoda.png" alt="Logo" className="w-8 h-8 object-contain drop-shadow-sm" />
               <span className="font-extrabold text-xl text-neutral-900 tracking-tight">
                 AdminPanel
               </span>
