@@ -26,10 +26,9 @@ export default async function AdminDashboardPage() {
       response_code,
       overall_score,
       answers,
-      nama,
       instansi,
       jabatan,
-      email
+      lama_bekerja
     `)
     .order('created_at', { ascending: false })
 

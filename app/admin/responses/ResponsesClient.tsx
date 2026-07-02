@@ -10,8 +10,8 @@ import { Select } from "@/components/ui/Select";
 import { deleteMultipleResponses } from "./actions";
 
 const FADE_UP = {
-  hidden: { opacity: 0, y: 20 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" as const } }
+  hidden: { opacity: 0, y: 10 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.3, ease: "easeOut" as const } }
 };
 
 const QUESTION_MAPPING: Record<string, string> = {
@@ -113,10 +113,9 @@ export function ResponsesClient({ initialResponses }: ResponsesClientProps) {
       const exportRow: any = {
         "ID Penilaian": row.response_code.replace(/^ASM-/, ""),
         "Waktu Pengisian": row.date,
-        "Nama": row.nama,
         "Instansi": row.inst,
         "Jabatan": row.jabatan,
-        "Email": row.email || "-",
+        "Lama Bekerja": row.lamaBekerja || "-",
         "Skor Keseluruhan (%)": score100.toFixed(1) + "%",
         "Kategori": status,
         "Skor Sensing (%)": getDimPct(sensingTotal, sensingCount),
@@ -139,10 +138,9 @@ export function ResponsesClient({ initialResponses }: ResponsesClientProps) {
     const wscols = [
       { wch: 15 }, // ID Penilaian
       { wch: 35 }, // Waktu Pengisian
-      { wch: 20 }, // Nama
       { wch: 30 }, // Instansi
       { wch: 20 }, // Jabatan
-      { wch: 25 }, // Email
+      { wch: 25 }, // Lama Bekerja
       { wch: 22 }, // Skor Keseluruhan (%)
       { wch: 22 }, // Kategori
       { wch: 20 }, // Skor Sensing (%)
@@ -166,13 +164,13 @@ export function ResponsesClient({ initialResponses }: ResponsesClientProps) {
           // Header styling
           worksheet[cellAddress].s = {
             font: { bold: true, color: { rgb: "FFFFFF" } },
-            fill: { fgColor: { rgb: "1CB0F6" } }, // SIPODA Blue background
+            fill: { fgColor: { rgb: "2563EB" } }, // Formal Blue
             alignment: { horizontal: "center", vertical: "center", wrapText: true },
             border: {
-              top: { style: "thin", color: { rgb: "CCCCCC" } },
-              bottom: { style: "thin", color: { rgb: "CCCCCC" } },
-              left: { style: "thin", color: { rgb: "CCCCCC" } },
-              right: { style: "thin", color: { rgb: "CCCCCC" } }
+              top: { style: "thin", color: { rgb: "CBD5E1" } },
+              bottom: { style: "thin", color: { rgb: "CBD5E1" } },
+              left: { style: "thin", color: { rgb: "CBD5E1" } },
+              right: { style: "thin", color: { rgb: "CBD5E1" } }
             }
           };
         } else {
@@ -185,10 +183,10 @@ export function ResponsesClient({ initialResponses }: ResponsesClientProps) {
           worksheet[cellAddress].s = {
             alignment: { vertical: "center", horizontal: hAlign, wrapText: true },
             border: {
-              top: { style: "thin", color: { rgb: "E5E5E5" } },
-              bottom: { style: "thin", color: { rgb: "E5E5E5" } },
-              left: { style: "thin", color: { rgb: "E5E5E5" } },
-              right: { style: "thin", color: { rgb: "E5E5E5" } }
+              top: { style: "thin", color: { rgb: "E2E8F0" } },
+              bottom: { style: "thin", color: { rgb: "E2E8F0" } },
+              left: { style: "thin", color: { rgb: "E2E8F0" } },
+              right: { style: "thin", color: { rgb: "E2E8F0" } }
             }
           };
         }
@@ -217,7 +215,7 @@ export function ResponsesClient({ initialResponses }: ResponsesClientProps) {
       const matchSearch = item.inst?.toLowerCase().includes(searchStr) ||
         item.nama?.toLowerCase().includes(searchStr) ||
         item.response_code?.toLowerCase().includes(searchStr);
-      const matchDate = dateFilter === "Semua Waktu" || true;
+      const matchDate = dateFilter === "Semua Waktu" || true; // Note: actual date filtering logic is mock for now
 
       return matchSearch && matchDate;
     });
@@ -227,36 +225,38 @@ export function ResponsesClient({ initialResponses }: ResponsesClientProps) {
   const paginatedData = filteredData.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   return (
-    <div className="min-h-screen bg-transparent font-sans text-neutral-900 pb-20">
+    <div className="min-h-screen bg-slate-50 font-sans text-slate-900 pb-20">
 
       {/* Header Section */}
-      <div className="pt-12 pb-6 px-6 md:px-12 max-w-[1400px] mx-auto border-b border-neutral-100 mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
-        <div>
-          <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-3">Data Penilaian</h1>
-          <p className="text-neutral-500 text-base max-w-2xl leading-relaxed pb-4">
-            Kelola dan ekspor keseluruhan data hasil penilaian yang masuk ke sistem.
-          </p>
-        </div>
-        <div className="flex gap-3 pb-4">
-          <button
-            onClick={handleDeleteSelected}
-            disabled={isDeleting || selectedIds.length === 0}
-            className={`inline-flex items-center justify-center gap-2 px-5 py-3 text-sm font-extrabold rounded-2xl transition-all shadow-sm ${selectedIds.length > 0
-                ? "bg-rose-50 text-rose-600 hover:bg-rose-100 active:scale-95 cursor-pointer border-2 border-rose-200"
-                : "bg-neutral-100 text-neutral-400 cursor-not-allowed border-2 border-transparent"
-              }`}
-          >
-            {isDeleting ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Trash2 className="w-4 h-4 mr-2 stroke-[3]" />}
-            Hapus {selectedIds.length > 0 ? `${selectedIds.length} Terpilih` : "Terpilih"}
-          </button>
-          <button onClick={handleExport} className="inline-flex items-center justify-center gap-2 px-6 py-3 text-sm font-extrabold bg-[#1cb0f6] text-white rounded-2xl hover:bg-[#1899d6] transition-all shadow-[0_4px_0_0_#1584b8] hover:translate-y-[2px] hover:shadow-[0_2px_0_0_#1584b8] active:translate-y-[4px] active:shadow-none">
-            <Download className="w-4 h-4 mr-2 stroke-[3]" />
-            Export Excel
-          </button>
+      <div className="mb-8 pt-8 pb-6 px-6 md:px-12">
+        <div className="max-w-[1400px] mx-auto flex flex-col md:flex-row md:items-end justify-between gap-6">
+          <div>
+            <h1 className="text-2xl md:text-3xl font-bold tracking-tight mb-2">Data Penilaian</h1>
+            <p className="text-slate-500 text-sm max-w-2xl leading-relaxed">
+              Kelola dan ekspor keseluruhan data hasil penilaian yang masuk ke sistem.
+            </p>
+          </div>
+          <div className="flex gap-3">
+            <button
+              onClick={handleDeleteSelected}
+              disabled={isDeleting || selectedIds.length === 0}
+              className={`inline-flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium rounded-md transition-all shadow-sm ${selectedIds.length > 0
+                  ? "bg-rose-50 text-rose-600 hover:bg-rose-100 border border-rose-200"
+                  : "bg-slate-100 text-slate-400 cursor-not-allowed border border-transparent"
+                }`}
+            >
+              {isDeleting ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Trash2 className="w-4 h-4 mr-1.5" />}
+              Hapus {selectedIds.length > 0 ? `(${selectedIds.length})` : ""}
+            </button>
+            <button onClick={handleExport} className="inline-flex items-center justify-center gap-2 px-5 py-2 text-sm font-medium bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors shadow-sm">
+              <Download className="w-4 h-4 mr-1.5" />
+              Export Excel
+            </button>
+          </div>
         </div>
       </div>
 
-      <div className="px-6 md:px-12 max-w-[1400px] mx-auto space-y-12">
+      <div className="px-6 md:px-12 max-w-[1400px] mx-auto space-y-8">
         <motion.div
           initial="hidden"
           animate="show"
@@ -267,12 +267,13 @@ export function ResponsesClient({ initialResponses }: ResponsesClientProps) {
           className="flex flex-col gap-6"
         >
           {/* Advanced Toolbar (Minimalist) */}
-          <div className="flex flex-col xl:flex-row items-start xl:items-center gap-6 justify-between">
-            <div className="flex items-center gap-4 text-neutral-900">
-              <div className="w-12 h-12 rounded-[1rem] bg-[#1cb0f6]/10 flex items-center justify-center border-2 border-[#1cb0f6]/20">
-                <Filter className="w-5 h-5 text-[#1cb0f6] stroke-[3]" />
+          <div className="flex flex-col xl:flex-row items-start xl:items-center gap-6 justify-between bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+            
+            <div className="flex items-center gap-3 text-slate-900">
+              <div className="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center border border-slate-200">
+                <Filter className="w-4 h-4 text-slate-600" />
               </div>
-              <span className="font-extrabold text-xl tracking-tight">Saring Data</span>
+              <span className="font-semibold text-lg tracking-tight">Penyaringan Data</span>
             </div>
 
             <div className="flex flex-wrap xl:flex-nowrap items-center gap-3 w-full xl:w-auto">
@@ -280,24 +281,24 @@ export function ResponsesClient({ initialResponses }: ResponsesClientProps) {
               {/* Search */}
               <div className="relative w-full sm:w-64">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Search className="h-4 w-4 text-neutral-400" />
+                  <Search className="h-4 w-4 text-slate-400" />
                 </div>
                 <input
                   type="text"
-                  placeholder="Cari ID, Nama..."
+                  placeholder="Cari ID, Nama, Instansi..."
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  className="block w-full pl-10 pr-3 py-3 border-2 border-neutral-200 rounded-2xl text-sm bg-white focus:outline-none focus:border-[#1cb0f6] focus:ring-4 focus:ring-[#1cb0f6]/20 transition-all font-bold text-neutral-900"
+                  className="block w-full pl-9 pr-3 py-2 border border-slate-300 rounded-md text-sm bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors text-slate-900 placeholder:text-slate-400"
                 />
               </div>
 
-              <div className="flex flex-wrap md:flex-nowrap gap-3 relative z-30">
+              <div className="flex flex-wrap md:flex-nowrap items-center gap-3 relative z-30 w-full sm:w-auto">
                 {/* Date Filter */}
-                <div className="w-full md:w-48">
+                <div className="w-full sm:w-48">
                   <Select
                     value={dateFilter}
                     onChange={setDateFilter}
-                    icon={<Calendar className="w-4 h-4" />}
+                    icon={<Calendar className="w-4 h-4 text-slate-500" />}
                     options={[
                       { label: "Semua Waktu", value: "Semua Waktu" },
                       { label: "Hari Ini", value: "Hari Ini" },
@@ -308,7 +309,7 @@ export function ResponsesClient({ initialResponses }: ResponsesClientProps) {
                 </div>
 
                 {/* Reset */}
-                <button onClick={handleReset} className="px-4 py-2.5 shrink-0 text-neutral-500 hover:text-neutral-900 hover:bg-neutral-100 rounded-xl transition-all flex items-center gap-2 text-sm font-medium">
+                <button onClick={handleReset} className="px-4 py-2 shrink-0 text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 border border-slate-200 rounded-md transition-colors flex items-center gap-2 text-sm font-medium">
                   <RotateCcw className="w-4 h-4" />
                   Reset
                 </button>
@@ -317,39 +318,38 @@ export function ResponsesClient({ initialResponses }: ResponsesClientProps) {
           </div>
 
           {/* Table */}
-          <div className="overflow-x-auto border-2 border-neutral-200 rounded-2xl relative min-h-[400px] bg-white shadow-sm overflow-hidden">
+          <div className="overflow-x-auto border border-slate-200 rounded-xl relative min-h-[400px] bg-white shadow-sm">
             {isLoading && (
-              <div className="absolute inset-0 bg-white/80 backdrop-blur-sm z-10 flex items-center justify-center">
-                <Loader2 className="w-6 h-6 animate-spin text-neutral-900" />
+              <div className="absolute inset-0 bg-white/50 backdrop-blur-[1px] z-10 flex items-center justify-center">
+                <Loader2 className="w-6 h-6 animate-spin text-blue-600" />
               </div>
             )}
 
             <table className="w-full text-left text-sm whitespace-nowrap">
-              <thead className="bg-[#f3f9fc] text-neutral-600 text-xs uppercase tracking-widest font-extrabold relative z-0">
+              <thead className="bg-slate-50 text-slate-500 text-xs font-semibold uppercase tracking-wider border-b border-slate-200 relative z-0">
                 <tr>
-                  <th className="py-4 px-6 w-10">
+                  <th className="py-3 px-6 w-10">
                     <input
                       type="checkbox"
-                      className="rounded-sm border-neutral-300 w-4 h-4 cursor-pointer"
+                      className="rounded border-slate-300 text-blue-600 focus:ring-blue-500 w-4 h-4 cursor-pointer"
                       checked={paginatedData.length > 0 && paginatedData.every(row => selectedIds.includes(row.id))}
                       onChange={handleSelectAll}
                     />
                   </th>
-                  <th className="py-4 px-6 w-24">ID Penilaian</th>
-                  <th className="py-4 px-6">Waktu Pengisian</th>
-                  <th className="py-4 px-6">Nama</th>
-                  <th className="py-4 px-6">Instansi</th>
-                  <th className="py-4 px-6 w-20 text-center">Skor</th>
-                  <th className="py-4 px-6 text-right">Aksi</th>
+                  <th className="py-3 px-6 w-24">ID Penilaian</th>
+                  <th className="py-3 px-6">Waktu Pengisian</th>
+                  <th className="py-3 px-6">Instansi</th>
+                  <th className="py-3 px-6 w-20 text-center">Skor</th>
+                  <th className="py-3 px-6 text-right">Aksi</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-neutral-100">
+              <tbody className="divide-y divide-slate-100">
                 {paginatedData.length === 0 && !isLoading ? (
                   <tr>
-                    <td colSpan={8} className="px-6 py-16 text-center text-neutral-500">
+                    <td colSpan={8} className="px-6 py-16 text-center text-slate-400">
                       <div className="flex flex-col items-center">
-                        <Filter className="w-8 h-8 text-neutral-300 mb-3" />
-                        <p>Tidak ada data yang sesuai dengan filter.</p>
+                        <Filter className="w-8 h-8 text-slate-300 mb-3" />
+                        <p className="font-medium">Tidak ada data yang sesuai dengan kriteria.</p>
                       </div>
                     </td>
                   </tr>
@@ -358,34 +358,33 @@ export function ResponsesClient({ initialResponses }: ResponsesClientProps) {
                     <tr
                       key={row.id}
                       onClick={() => setSelectedResponse(row)}
-                      className="hover:bg-[#f3f9fc]/50 transition-colors cursor-pointer group"
+                      className="hover:bg-slate-50/80 transition-colors cursor-pointer"
                     >
                       <td className="px-6 py-4" onClick={(e) => e.stopPropagation()}>
                         <input
                           type="checkbox"
-                          className="rounded-sm border-neutral-300 w-4 h-4 cursor-pointer"
+                          className="rounded border-slate-300 text-blue-600 focus:ring-blue-500 w-4 h-4 cursor-pointer"
                           checked={selectedIds.includes(row.id)}
                           onChange={() => handleSelectRow(row.id)}
                         />
                       </td>
-                      <td className="px-6 py-4 font-mono text-neutral-900 font-medium group-hover:text-neutral-700 transition-colors">{row.response_code.replace(/^ASM-/, "")}</td>
-                      <td className="px-6 py-4 text-neutral-700">{row.date}</td>
-                      <td className="px-6 py-4 text-neutral-500 max-w-[150px] truncate">{row.nama}</td>
-                      <td className="px-6 py-4 text-neutral-500 max-w-[200px] truncate">{row.inst}</td>
+                      <td className="px-6 py-4 text-slate-900 font-medium">{row.response_code.replace(/^ASM-/, "")}</td>
+                      <td className="px-6 py-4 text-slate-600">{row.date}</td>
+                      <td className="px-6 py-4 text-slate-700 max-w-[200px] truncate">{row.inst}</td>
                       <td className="px-6 py-4 text-center">
-                        <div className="inline-flex items-center justify-center px-2.5 py-1 bg-neutral-100 rounded-lg font-bold text-neutral-900">
+                        <div className="inline-flex items-center justify-center px-2 py-1 bg-slate-100 rounded text-sm font-semibold text-slate-900">
                           {((row.score / 5) * 100).toFixed(1)}%
                         </div>
                       </td>
                       <td className="px-6 py-4 text-right">
                         <button
-                          className="inline-flex items-center justify-center px-4 py-2 text-sm font-bold bg-[#f3f9fc] text-[#1cb0f6] rounded-xl hover:bg-[#e1f1fa] active:scale-95 transition-all"
+                          className="inline-flex items-center justify-center px-3 py-1.5 text-xs font-medium text-blue-600 hover:text-blue-700 bg-blue-50 hover:bg-blue-100 rounded-md transition-colors"
                           onClick={(e) => {
                             e.stopPropagation();
                             setSelectedResponse(row);
                           }}
                         >
-                          <Eye className="w-4 h-4 mr-2" /> Detail
+                          <Eye className="w-3.5 h-3.5 mr-1.5" /> Detail
                         </button>
                       </td>
                     </tr>
@@ -396,9 +395,9 @@ export function ResponsesClient({ initialResponses }: ResponsesClientProps) {
           </div>
 
           {/* Pagination */}
-          <div className="mt-6 flex flex-col md:flex-row items-center justify-between text-sm px-2 gap-4">
-            <div className="flex flex-col sm:flex-row items-center gap-3 text-neutral-500 font-medium">
-              <span className="whitespace-nowrap">Menampilkan {filteredData.length === 0 ? 0 : Math.min(filteredData.length, (currentPage - 1) * itemsPerPage + 1)}-{Math.min(filteredData.length, currentPage * itemsPerPage)} dari <span className="text-neutral-900 font-bold">{filteredData.length}</span> data</span>
+          <div className="mt-4 flex flex-col md:flex-row items-center justify-between text-sm px-1 gap-4">
+            <div className="flex flex-col sm:flex-row items-center gap-3 text-slate-500 font-medium">
+              <span className="whitespace-nowrap">Menampilkan {filteredData.length === 0 ? 0 : Math.min(filteredData.length, (currentPage - 1) * itemsPerPage + 1)}-{Math.min(filteredData.length, currentPage * itemsPerPage)} dari <span className="text-slate-900 font-semibold">{filteredData.length}</span> data</span>
               <div className="flex items-center gap-2 whitespace-nowrap">
                 <span>Tampilkan</span>
                 <div className="w-[85px] z-20">
@@ -422,14 +421,14 @@ export function ResponsesClient({ initialResponses }: ResponsesClientProps) {
             </div>
             <div className="flex gap-2">
               <button
-                className="inline-flex items-center justify-center w-12 h-12 border-2 border-neutral-200 text-neutral-500 bg-white rounded-2xl hover:bg-neutral-50 hover:text-neutral-900 hover:border-neutral-300 disabled:opacity-50 disabled:pointer-events-none transition-all shadow-sm active:scale-95"
+                className="inline-flex items-center justify-center p-2 border border-slate-300 text-slate-600 bg-white rounded-md hover:bg-slate-50 disabled:opacity-50 disabled:pointer-events-none transition-colors shadow-sm"
                 disabled={currentPage === 1}
                 onClick={() => setCurrentPage(p => p - 1)}
               >
                 <ChevronLeft className="w-4 h-4" />
               </button>
               <button
-                className="inline-flex items-center justify-center w-12 h-12 border-2 border-neutral-200 text-neutral-500 bg-white rounded-2xl hover:bg-neutral-50 hover:text-neutral-900 hover:border-neutral-300 disabled:opacity-50 disabled:pointer-events-none transition-all shadow-sm active:scale-95"
+                className="inline-flex items-center justify-center p-2 border border-slate-300 text-slate-600 bg-white rounded-md hover:bg-slate-50 disabled:opacity-50 disabled:pointer-events-none transition-colors shadow-sm"
                 disabled={currentPage === totalPages || totalPages === 0}
                 onClick={() => setCurrentPage(p => p + 1)}
               >

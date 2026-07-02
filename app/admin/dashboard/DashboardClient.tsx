@@ -15,11 +15,11 @@ interface DashboardClientProps {
 type Period = 7 | 30 | 365 | 'today' | 'all';
 
 function getCategoryData(score100: number) {
-  if (score100 <= 20) return { status: "Tidak Adaptif", color: "text-red-700", bg: "bg-red-50", border: "border-red-200" };
+  if (score100 <= 20) return { status: "Tidak Adaptif", color: "text-rose-700", bg: "bg-rose-50", border: "border-rose-200" };
   if (score100 <= 40) return { status: "Kurang Adaptif", color: "text-orange-700", bg: "bg-orange-50", border: "border-orange-200" };
   if (score100 <= 60) return { status: "Cukup Adaptif", color: "text-yellow-700", bg: "bg-yellow-50", border: "border-yellow-200" };
   if (score100 <= 80) return { status: "Adaptif", color: "text-blue-700", bg: "bg-blue-50", border: "border-blue-200" };
-  return { status: "Sangat Adaptif", color: "text-green-700", bg: "bg-green-50", border: "border-green-200" };
+  return { status: "Sangat Adaptif", color: "text-emerald-700", bg: "bg-emerald-50", border: "border-emerald-200" };
 }
 
 export function DashboardClient({ responses }: DashboardClientProps) {
@@ -180,87 +180,91 @@ export function DashboardClient({ responses }: DashboardClientProps) {
   }, [filteredResponses]);
 
   return (
-    <div className="min-h-screen bg-transparent font-sans text-neutral-900 pb-20">
+    <div className="min-h-screen bg-slate-50 font-sans text-slate-900 pb-20">
 
       {/* Dashboard Header + Global Filter */}
-      <div className="pt-12 pb-8 px-6 md:px-12 max-w-[1400px] mx-auto flex flex-col md:flex-row md:items-start justify-between gap-6 border-b-2 border-neutral-100 mb-8">
-        <div>
-          <h1 className="text-3xl md:text-4xl font-black tracking-tight mb-2 text-neutral-900">Dashboard SIPODA</h1>
-          <p className="text-neutral-500 font-bold text-base max-w-xl leading-relaxed">
-            Monitoring hasil penilaian kemampuan adaptif organisasi.
-          </p>
-        </div>
-        
-        <div className="w-full md:w-56 shrink-0 z-30">
-          {mounted && (
-            <Select
-              instanceId="global-period-select"
-              options={[
-                { value: "all", label: "Semua Data" },
-                { value: "today", label: "Hari Ini" },
-                { value: 7, label: "7 Hari Terakhir" },
-                { value: 30, label: "30 Hari Terakhir" },
-                { value: 365, label: "Tahun Ini" },
-              ]}
-              styles={{
-                control: (base, state) => ({ ...base, padding: '2px', borderRadius: '1rem', borderColor: state.isFocused ? '#1cb0f6' : '#e5e5e5', borderWidth: '2px', boxShadow: 'none', '&:hover': { borderColor: state.isFocused ? '#1cb0f6' : '#a3a3a3' }, backgroundColor: 'white' }),
-                option: (base, state) => ({ ...base, backgroundColor: state.isSelected ? '#e5e5e5' : state.isFocused ? '#f5f5f5' : 'white', color: '#171717', cursor: 'pointer', fontWeight: 600, '&:active': { backgroundColor: '#d4d4d4' } }),
-                singleValue: (base) => ({ ...base, fontWeight: 700 })
-              }}
-              value={{ value: period, label: period === 'all' ? 'Semua Data' : period === 'today' ? 'Hari Ini' : period === 365 ? 'Tahun Ini' : `${period} Hari Terakhir` }}
-              onChange={(selected: any) => setPeriod(selected.value)}
-              isSearchable={false}
-            />
-          )}
+      <div className="mb-8 pt-8 pb-6 px-6 md:px-12">
+        <div className="max-w-[1400px] mx-auto flex flex-col md:flex-row md:items-start justify-between gap-6">
+          <div>
+            <h1 className="text-2xl md:text-3xl font-bold tracking-tight mb-2 text-slate-900">Dashboard Evaluasi</h1>
+            <p className="text-slate-500 font-medium text-sm max-w-xl leading-relaxed">
+              Monitoring hasil penilaian kemampuan adaptif organisasi secara aktual.
+            </p>
+          </div>
+          
+          <div className="w-full md:w-64 shrink-0 z-30">
+            {mounted && (
+              <Select
+                instanceId="global-period-select"
+                options={[
+                  { value: "all", label: "Semua Waktu" },
+                  { value: "today", label: "Hari Ini" },
+                  { value: 7, label: "7 Hari Terakhir" },
+                  { value: 30, label: "30 Hari Terakhir" },
+                  { value: 365, label: "Tahun Ini" },
+                ]}
+                styles={{
+                  control: (base, state) => ({ ...base, padding: '2px', borderRadius: '0.5rem', borderColor: state.isFocused ? '#2563eb' : '#e2e8f0', borderWidth: '1px', boxShadow: state.isFocused ? '0 0 0 1px #2563eb' : 'none', '&:hover': { borderColor: state.isFocused ? '#2563eb' : '#cbd5e1' }, backgroundColor: 'white' }),
+                  option: (base, state) => ({ ...base, backgroundColor: state.isSelected ? '#eff6ff' : state.isFocused ? '#f8fafc' : 'white', color: state.isSelected ? '#1e40af' : '#334155', cursor: 'pointer', fontSize: '14px', '&:active': { backgroundColor: '#dbeafe' } }),
+                  singleValue: (base) => ({ ...base, fontSize: '14px', color: '#0f172a' })
+                }}
+                value={{ value: period, label: period === 'all' ? 'Semua Waktu' : period === 'today' ? 'Hari Ini' : period === 365 ? 'Tahun Ini' : `${period} Hari Terakhir` }}
+                onChange={(selected: any) => setPeriod(selected.value)}
+                isSearchable={false}
+              />
+            )}
+          </div>
         </div>
       </div>
 
-      <div className="px-6 md:px-12 max-w-[1400px] mx-auto space-y-10">
+      <div className="px-6 md:px-12 max-w-[1400px] mx-auto space-y-8">
 
         {/* 3 KPI Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-white border-2 border-neutral-200 rounded-2xl p-5 md:p-6 shadow-sm flex flex-col justify-between">
-            <p className="text-xs font-black text-neutral-400 uppercase tracking-widest mb-4 flex items-center gap-2">
+          <div className="bg-white border border-slate-200 rounded-xl p-5 md:p-6 shadow-sm flex flex-col justify-between">
+            <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-4">
               Total Responden
             </p>
             <div>
-              <p className="text-5xl font-black tracking-tighter text-[#1cb0f6]">{totalPenilaian}</p>
-              <p className="text-sm text-neutral-500 mt-2 font-bold leading-relaxed">Jumlah seluruh responden yang telah mengisi kuesioner.</p>
+              <p className="text-4xl font-bold tracking-tight text-slate-900 mb-1">{totalPenilaian}</p>
+              <p className="text-sm text-slate-500">Jumlah seluruh partisipan kuesioner.</p>
             </div>
           </div>
 
-          <div className="bg-white border-2 border-neutral-200 rounded-2xl p-5 md:p-6 shadow-sm flex flex-col justify-between">
-            <p className="text-xs font-black text-neutral-400 uppercase tracking-widest mb-4">
+          <div className="bg-white border border-slate-200 rounded-xl p-5 md:p-6 shadow-sm flex flex-col justify-between">
+            <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-4">
               Responden Hari Ini
             </p>
             <div>
-              <p className="text-5xl font-black tracking-tighter text-[#1cb0f6]">{todayResponsesCount}</p>
-              <p className="text-sm text-neutral-500 mt-2 font-bold leading-relaxed">Jumlah data kuesioner yang masuk hari ini.</p>
+              <p className="text-4xl font-bold tracking-tight text-slate-900 mb-1">{todayResponsesCount}</p>
+              <p className="text-sm text-slate-500">Data masuk pada hari ini.</p>
             </div>
           </div>
 
 
-          <div className="bg-white border-2 border-neutral-200 rounded-2xl p-5 md:p-6 shadow-sm flex flex-col justify-between">
-            <p className="text-xs font-black text-neutral-400 uppercase tracking-widest mb-4">Kategori Dominan</p>
+          <div className="bg-white border border-slate-200 rounded-xl p-5 md:p-6 shadow-sm flex flex-col justify-between">
+            <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-4">Kategori Dominan</p>
             <div>
-              <p className={`text-3xl md:text-4xl font-black tracking-tighter mb-2 truncate ${totalPenilaian > 0 ? "text-[#1cb0f6]" : "text-neutral-900"}`}>
+              <p className={`text-2xl font-bold tracking-tight mb-1 truncate ${totalPenilaian > 0 ? "text-slate-900" : "text-slate-400"}`}>
                 {dominantCategory.name}
               </p>
-              <p className="text-sm text-neutral-500 font-bold leading-relaxed">
-                {totalPenilaian > 0 ? `${dominantCategory.count} Responden di kategori ini.` : "Belum ada kategori dominan."}
+              <p className="text-sm text-slate-500">
+                {totalPenilaian > 0 ? `${dominantCategory.count} Responden masuk di kategori ini.` : "-"}
               </p>
             </div>
           </div>
         </div>
 
         {/* Assessment Trend (Simple Line Chart) */}
-        <div className="bg-white border-2 border-neutral-200 rounded-2xl p-6 md:p-8 shadow-sm">
-          <div className="mb-8">
-            <h2 className="text-2xl font-black tracking-tight text-neutral-900 mb-1">Tren Penilaian</h2>
-            <p className="text-neutral-500 font-bold text-sm">Jumlah responden yang mengisi berdasarkan periode yang dipilih.</p>
+        <div className="bg-white border border-slate-200 rounded-xl p-6 md:p-8 shadow-sm">
+          <div className="mb-6 flex flex-col md:flex-row md:items-end justify-between gap-4">
+            <div>
+              <h2 className="text-lg font-bold text-slate-900 mb-1">Tren Penilaian</h2>
+              <p className="text-slate-500 text-sm">Volume pengisian kuesioner berdasarkan periode waktu.</p>
+            </div>
           </div>
           
-          <div className="w-full h-[300px]">
+          <div className="w-full h-[320px]">
             {trendData.length > 0 ? (
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={trendData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
@@ -268,107 +272,106 @@ export function DashboardClient({ responses }: DashboardClientProps) {
                     dataKey="date" 
                     axisLine={false}
                     tickLine={false}
-                    tick={{ fill: '#a3a3a3', fontSize: 12, fontWeight: 700 }}
+                    tick={{ fill: '#64748b', fontSize: 12 }}
                     dy={10}
                   />
                   <YAxis 
                     axisLine={false}
                     tickLine={false}
-                    tick={{ fill: '#a3a3a3', fontSize: 12, fontWeight: 700 }}
+                    tick={{ fill: '#64748b', fontSize: 12 }}
                   />
                   <Tooltip 
-                    cursor={{ stroke: '#e5e5e5', strokeWidth: 2, strokeDasharray: '5 5' }}
-                    contentStyle={{ borderRadius: '1rem', border: '2px solid #e5e5e5', boxShadow: 'none', fontWeight: 700, padding: '12px' }}
-                    labelStyle={{ color: '#737373', marginBottom: '4px' }}
+                    cursor={{ stroke: '#e2e8f0', strokeWidth: 1, strokeDasharray: '4 4' }}
+                    contentStyle={{ borderRadius: '0.5rem', border: '1px solid #e2e8f0', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)', fontSize: '13px', padding: '10px' }}
+                    labelStyle={{ color: '#64748b', marginBottom: '4px' }}
                   />
                   <Line 
                     type="monotone" 
                     dataKey="count" 
                     name="Responden"
-                    stroke="#1cb0f6" 
-                    strokeWidth={4}
-                    dot={{ r: 4, strokeWidth: 2, fill: "#fff", stroke: "#1cb0f6" }}
-                    activeDot={{ r: 6, strokeWidth: 3, fill: "#1cb0f6", stroke: "#fff" }}
+                    stroke="#2563eb" 
+                    strokeWidth={2}
+                    dot={{ r: 3, strokeWidth: 2, fill: "#fff", stroke: "#2563eb" }}
+                    activeDot={{ r: 5, strokeWidth: 0, fill: "#2563eb" }}
                     isAnimationActive={false}
                   />
                 </LineChart>
               </ResponsiveContainer>
             ) : (
-              <div className="w-full h-full flex flex-col items-center justify-center text-neutral-400 font-bold">
-                <CalendarDays className="w-8 h-8 mb-3 opacity-50" />
-                Tidak ada data tren untuk periode ini.
+              <div className="w-full h-full flex flex-col items-center justify-center text-slate-400">
+                <CalendarDays className="w-10 h-10 mb-3 text-slate-300" />
+                <p className="text-sm font-medium">Tidak ada data untuk periode ini.</p>
               </div>
             )}
           </div>
         </div>
 
         {/* Latest Assessments Table */}
-        <div>
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
+        <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+          <div className="p-6 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white">
             <div>
-              <h2 className="text-2xl font-black tracking-tight text-neutral-900">Penilaian Terbaru</h2>
+              <h2 className="text-lg font-bold text-slate-900">Data Responden Terbaru</h2>
+              <p className="text-sm text-slate-500 mt-1">10 data penilaian terakhir yang masuk ke dalam sistem.</p>
             </div>
-            <Link href="/admin/responses" className="inline-flex items-center justify-center gap-2 px-6 py-3 text-sm font-extrabold bg-white text-neutral-700 border-2 border-neutral-200 rounded-2xl hover:bg-neutral-50 hover:text-neutral-900 transition-colors active:scale-95 shadow-sm">
-              Lihat Semua
+            <Link href="/admin/responses" className="inline-flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium bg-white text-slate-700 border border-slate-300 rounded-md hover:bg-slate-50 transition-colors shadow-sm">
+              Lihat Selengkapnya
             </Link>
           </div>
 
-          <div className="overflow-hidden border-2 border-neutral-200 rounded-2xl relative bg-white shadow-sm">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-sm whitespace-nowrap">
-                <thead className="bg-[#f3f9fc] text-neutral-600 text-xs uppercase tracking-widest font-extrabold border-b-2 border-neutral-200">
-                  <tr>
-                    <th className="py-5 px-6 w-32">Tanggal</th>
-                    <th className="py-5 px-6">Instansi</th>
-                    <th className="py-5 px-6">Jabatan</th>
-                    <th className="py-5 px-6 w-24">Skor</th>
-                    <th className="py-5 px-6 w-40 text-center">Kategori</th>
-                    <th className="py-5 px-6 w-32 text-right">Aksi</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y-2 divide-neutral-100">
-                  {recentAssessments.map(r => {
-                    const score100 = r.overall_score ? (r.overall_score / 5) * 100 : 0;
-                    const cat = getCategoryData(score100);
-                    
-                    return (
-                      <tr key={r.id} className="hover:bg-[#f3f9fc]/50 transition-colors group">
-                        <td className="py-4 px-6 font-bold text-neutral-500">
-                          {new Date(r.created_at).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })}
-                        </td>
-                        <td className="py-4 px-6 font-black text-neutral-900 truncate max-w-[200px]" title={r.instansi}>
-                          {r.instansi || "-"}
-                        </td>
-                        <td className="py-4 px-6 font-bold text-neutral-600 truncate max-w-[150px]" title={r.jabatan}>
-                          {r.jabatan || "-"}
-                        </td>
-                        <td className="py-4 px-6 font-black text-neutral-900 text-base">
-                          {score100.toFixed(1)}%
-                        </td>
-                        <td className="py-4 px-6 text-center">
-                          <span className={`inline-flex px-3 py-1 text-xs font-black rounded-xl border-2 ${cat.bg} ${cat.color} ${cat.border}`}>
-                              {cat.status}
-                          </span>
-                        </td>
-                        <td className="py-4 px-6 text-right">
-                          <button 
-                            onClick={() => setSelectedResponse(r)}
-                            className="inline-flex items-center justify-center px-4 py-2 text-sm font-bold bg-[#f3f9fc] text-[#1cb0f6] rounded-xl hover:bg-[#e1f1fa] active:scale-95 transition-all"
-                          >
-                            <Eye className="w-4 h-4 mr-2 stroke-[3]" /> Detail
-                          </button>
-                        </td>
-                      </tr>
-                    )
-                  })}
-                  {recentAssessments.length === 0 && (
-                    <tr>
-                      <td colSpan={6} className="py-16 text-center text-neutral-400 font-bold">Belum ada data penilaian.</td>
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-sm whitespace-nowrap">
+              <thead className="bg-slate-50 text-slate-500 font-semibold border-b border-slate-200">
+                <tr>
+                  <th className="py-3 px-6 w-32 font-medium">Tanggal</th>
+                  <th className="py-3 px-6 font-medium">Instansi</th>
+                  <th className="py-3 px-6 font-medium">Jabatan</th>
+                  <th className="py-3 px-6 w-24 font-medium">Skor</th>
+                  <th className="py-3 px-6 w-40 text-center font-medium">Kategori</th>
+                  <th className="py-3 px-6 w-32 text-right font-medium">Aksi</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {recentAssessments.map(r => {
+                  const score100 = r.overall_score ? (r.overall_score / 5) * 100 : 0;
+                  const cat = getCategoryData(score100);
+                  
+                  return (
+                    <tr key={r.id} className="hover:bg-slate-50/80 transition-colors">
+                      <td className="py-3.5 px-6 text-slate-500">
+                        {new Date(r.created_at).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })}
+                      </td>
+                      <td className="py-3.5 px-6 font-medium text-slate-900 truncate max-w-[200px]" title={r.instansi}>
+                        {r.instansi || "-"}
+                      </td>
+                      <td className="py-3.5 px-6 text-slate-600 truncate max-w-[150px]" title={r.jabatan}>
+                        {r.jabatan || "-"}
+                      </td>
+                      <td className="py-3.5 px-6 font-semibold text-slate-900">
+                        {score100.toFixed(1)}%
+                      </td>
+                      <td className="py-3.5 px-6 text-center">
+                        <span className={`inline-flex px-2.5 py-0.5 text-[11px] font-medium rounded-full border ${cat.bg} ${cat.color} ${cat.border}`}>
+                            {cat.status}
+                        </span>
+                      </td>
+                      <td className="py-3.5 px-6 text-right">
+                        <button 
+                          onClick={() => setSelectedResponse(r)}
+                          className="inline-flex items-center justify-center px-3 py-1.5 text-xs font-medium text-blue-600 hover:text-blue-700 bg-blue-50 hover:bg-blue-100 rounded-md transition-colors"
+                        >
+                          <Eye className="w-3.5 h-3.5 mr-1.5" /> Detail
+                        </button>
+                      </td>
                     </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
+                  )
+                })}
+                {recentAssessments.length === 0 && (
+                  <tr>
+                    <td colSpan={6} className="py-12 text-center text-slate-400">Belum ada data yang masuk.</td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
           </div>
         </div>
 

@@ -3,10 +3,9 @@
 import { createClient } from '@/lib/supabase/server'
 
 interface AssessmentPayload {
-  nama: string;
   instansi: string;
   jabatan: string;
-  email?: string;
+  lama_bekerja?: string;
   answers: any;
 }
 
@@ -32,10 +31,9 @@ export async function submitAssessment(payload: AssessmentPayload) {
     .from('survey_responses')
     .insert({
       response_code: responseCode,
-      nama: payload.nama,
       instansi: payload.instansi,
       jabatan: payload.jabatan,
-      email: payload.email || null,
+      lama_bekerja: payload.lama_bekerja || null,
       answers: payload.answers,
       overall_score: overall_score
     } as any)
